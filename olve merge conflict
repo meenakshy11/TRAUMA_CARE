@@ -1,0 +1,213 @@
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mdeleted file mode 100644[m
+[1mindex 67726b8d..00000000[m
+[1m--- a/.gitignore[m
+[1m+++ /dev/null[m
+[36m@@ -1,18 +0,0 @@[m
+[31m-__pycache__/[m
+[31m-*.py[cod][m
+[31m-*.pyo[m
+[31m-.env[m
+[31m-!.env.example[m
+[31m-*.egg-info/[m
+[31m-node_modules/[m
+[31m-dist/[m
+[31m-.next/[m
+[31m-.expo/[m
+[31m-*.log[m
+[31m-.DS_Store[m
+[31m-Thumbs.db[m
+[31m-.vscode/[m
+[31m-.idea/[m
+[31m-google-services.json[m
+[31m-firebase-credentials.json[m
+[31m-postgres_data/[m
+[1mdiff --git a/apps/backend/Dockerfile b/apps/backend/Dockerfile[m
+[1mindex 98a43bdb..e69de29b 100644[m
+[1m--- a/apps/backend/Dockerfile[m
+[1m+++ b/apps/backend/Dockerfile[m
+[36m@@ -1,13 +0,0 @@[m
+[31m-FROM python:3.11-slim[m
+[31m-[m
+[31m-WORKDIR /app[m
+[31m-[m
+[31m-RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*[m
+[31m-[m
+[31m-COPY requirements.txt .[m
+[31m-RUN pip install --no-cache-dir -r requirements.txt[m
+[31m-[m
+[31m-COPY . .[m
+[31m-[m
+[31m-EXPOSE 8000[m
+[31m-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"][m
+[1mdiff --git a/apps/backend/app/api/v1/ambulances.py b/apps/backend/app/api/v1/ambulances.py[m
+[1mindex f03fd5b1..e69de29b 100644[m
+[1m--- a/apps/backend/app/api/v1/ambulances.py[m
+[1m+++ b/apps/backend/app/api/v1/ambulances.py[m
+[36m@@ -1,162 +0,0 @@[m
+[31m-from fastapi import APIRouter, Depends, Query[m
+[31m-from sqlalchemy.ext.asyncio import AsyncSession[m
+[31m-from pydantic import BaseModel[m
+[31m-from typing import Optional[m
+[31m-from app.db.session import get_db[m
+[31m-from app.dependencies import get_current_user[m
+[31m-from app.models.user import User[m
+[31m-from app.services.ambulance_service import ([m
+[31m-    list_ambulances, get_ambulance, update_ambulance_location,[m
+[31m-    update_ambulance_status, list_staging_stations[m
+[31m-)[m
+[31m-from app.services.notification_service import manager[m
+[31m-import uuid[m
+[31m-[m
+[31m-router = APIRouter(prefix="/ambulances", tags=["ambulances"])[m
+[31m-[m
+[31m-[m
+[31m-class LocationUpdate(BaseModel):[m
+[31m-    latitude: float[m
+[31m-    longitude: float[m
+[31m-    speed_kmph: Optional[float] = None[m
+[31m-    heading: Optional[float] = None[m
+[31m-    incident_id: Optional[uuid.UUID] = None[m
+[31m-[m
+[31m-[m
+[31m-class StatusUpdate(BaseModel):[m
+[31m-    status: str[m
+[31m-[m
+[31m-[m
+[31m-class AmbulanceCreate(BaseModel):[m
+[31m-    registration_no: str[m
+[31m-    ambulance_type: str = "BLS"[m
+[31m-    district: str[m
+[31m-    staging_station_id: Optional[uuid.UUID] = None[m
+[31m-    device_id: Optional[str] = None[m
+[31m-    current_lat: Optional[float] = None[m
+[31m-    current_lon: Optional[float] = None[m
+[31m-[m
+[31m-[m
+[31m-def serialize_ambulance(amb) -> dict:[m
+[31m-    return {[m
+[31m-        "id": str(amb.id),[m
+[31m-        "registration_no": amb.registration_no,[m
+[31m-        "ambulance_type": amb.ambulance_type,[m
+[31m-        "status": amb.status,[m
+[31m-        "current_lat": amb.current_lat,[m
+[31m-        "current_lon": amb.current_lon,[m
+[31m-        "last_location_at": amb.last_location_at.isoformat() if amb.last_location_at else None,[m
+[31m-        "district": amb.district,[m
+[31m-        "is_active": amb.is_active,[m
+[31m-        "staging_station_id": str(amb.staging_station_id) if amb.staging_station_id else None,[m
+[31m-        "device_id": amb.device_id,[m
+[31m-        "speed_kmph": amb.speed_kmph,[m
+[31m-        "created_at": amb.created_at.isoformat() if amb.created_at else None,[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-@router.get("")[m
+[31m-async def list_all([m
+[31m-    status: Optional[str] = Query(None),[m
+[31m-    district: Optional[str] = Query(None),[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    ambulances = await list_ambulances(db, status=status, district=district)[m
+[31m-    return [serialize_ambulance(a) for a in ambulances][m
+[31m-[m
+[31m-[m
+[31m-@router.get("/stations")[m
+[31m-async def get_stations([m
+[31m-    district: Optional[str] = Query(None),[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    stations = await list_staging_stations(db, district=district)[m
+[31m-    return [[m
+[31m-        {[m
+[31m-            "id": str(s.id),[m
+[31m-            "name": s.name,[m
+[31m-            "latitude": s.latitude,[m
+[31m-            "longitude": s.longitude,[m
+[31m-            "district": s.district,[m
+[31m-            "fuel_brand": s.fuel_brand,[m
+[31m-            "capacity": s.capacity,[m
+[31m-            "nearby_blackspot_count": s.nearby_blackspot_count,[m
+[31m-            "ambulance_count": len(s.ambulances),[m
+[31m-        }[m
+[31m-        for s in stations[m
+[31m-    ][m
+[31m-[m
+[31m-[m
+[31m-@router.get("/{ambulance_id}")[m
+[31m-async def get_one([m
+[31m-    ambulance_id: uuid.UUID,[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    amb = await get_ambulance(db, ambulance_id)[m
+[31m-    if not amb:[m
+[31m-        from app.core.exceptions import NotFoundException[m
+[31m-        raise NotFoundException("Ambulance")[m
+[31m-    return serialize_ambulance(amb)[m
+[31m-[m
+[31m-[m
+[31m-@router.post("/{ambulance_id}/location")[m
+[31m-async def push_location([m
+[31m-    ambulance_id: uuid.UUID,[m
+[31m-    body: LocationUpdate,[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    amb = await update_ambulance_location([m
+[31m-        db, ambulance_id, body.latitude, body.longitude,[m
+[31m-        body.speed_kmph, body.heading, body.incident_id[m
+[31m-    )[m
+[31m-    if not amb:[m
+[31m-        from app.core.exceptions import NotFoundException[m
+[31m-        raise NotFoundException("Ambulance")[m
+[31m-    await db.commit()[m
+[31m-    await manager.broadcast_ambulance_location([m
+[31m-        str(ambulance_id), body.latitude, body.longitude, str(amb.status)[m
+[31m-    )[m
+[31m-    return {"status": "location updated"}[m
+[31m-[m
+[31m-[m
+[31m-@router.patch("/{ambulance_id}/status")[m
+[31m-async def update_status([m
+[31m-    ambulance_id: uuid.UUID,[m
+[31m-    body: StatusUpdate,[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    amb = await update_ambulance_status(db, ambulance_id, body.status)[m
+[31m-    if not amb:[m
+[31m-        from app.core.exceptions import NotFoundException[m
+[31m-        raise NotFoundException("Ambulance")[m
+[31m-    await db.commit()[m
+[31m-    return serialize_ambulance(amb)[m
+[31m-[m
+[31m-[m
+[31m-@router.post("")[m
+[31m-async def create_ambulance([m
+[31m-    body: AmbulanceCreate,[m
+[31m-    db: AsyncSession = Depends(get_db),[m
+[31m-    current_user: User = Depends(get_current_user),[m
+[31m-):[m
+[31m-    from app.models.ambulance import Ambulance[m
+[31m-    from app.core.constants import AmbulanceType, AmbulanceStatus[m
+[31m-    amb = Ambulance([m
+[31m-        registration_no=body.registration_no,[m
+[31m-        ambulance_type=AmbulanceType(body.ambulance_type),[m
+[31m-        district=body.district,[m
+[31m-        staging_station_id=body.staging_station_id,[m
+[31m-        device_id=body.device_id,[m
+[31m-        current_lat=body.current_lat,[m
+[31m-        current_lon=body.current_lon,[m
+[31m-        status=AmbulanceStatus.AVAILABLE,[m
+[31m-    )[m
+[31m-    db.add(amb)[m
+[31m-    await db.commit()[m
+[31m-    await db.refresh(amb)[m
+[31m-    return serialize_ambulance(amb)[m
+[1mdiff --git a/apps/backend/app/api/v1/analytics.py b/apps/backend/app/api/v1/analytics.py[m
+[1mindex 7ce46c9e..e69de29b 100644[m
+[1m--- a/apps/backend/app/api/v1/analytics.py[m
+[1m+++ b/apps/backend/app/api/v1/ana
