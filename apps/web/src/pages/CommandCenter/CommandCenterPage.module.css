@@ -1,0 +1,228 @@
+/* CommandCenterPage.module.css */
+
+/* ── Page Shell ─────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height));
+  overflow: hidden;
+  background: var(--color-bg-primary);
+}
+
+/* ── KPI Strip ──────────────────────────────────────────────── */
+.kpiStrip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 16px;
+  height: 56px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.kpiStrip::-webkit-scrollbar { display: none; }
+
+.kpiCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 0 20px;
+  border-right: 1px solid var(--color-border-subtle);
+  min-width: 0;
+  flex-shrink: 0;
+  position: relative;
+}
+.kpiCard:first-child { padding-left: 4px; }
+.kpiCard:last-of-type { border-right: none; }
+
+.kpiValue {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kpiPulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: kpi-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes kpi-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+.kpiLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-disabled);
+  white-space: nowrap;
+}
+
+.kpiSub {
+  font-size: 10px;
+  color: var(--color-text-disabled);
+  white-space: nowrap;
+}
+
+.kpiLoading {
+  font-size: 13px;
+  color: var(--color-text-disabled);
+  padding: 0 12px;
+}
+
+/* Dispatch shortcut button */
+.dispatchBtn {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(239,68,68,0.35);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  animation: dispatch-appear 200ms ease;
+}
+.dispatchBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239,68,68,0.45);
+}
+@keyframes dispatch-appear {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Main 3-column grid ─────────────────────────────────────── */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 300px 1fr 280px;
+  flex: 1;
+  min-height: 0;      /* ← critical: lets flex child shrink below content size */
+  overflow: hidden;
+}
+
+/* ── Map area ───────────────────────────────────────────────── */
+.mapArea {
+  position: relative;
+  /* Fill all available height from the flex/grid parent */
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+/*
+ * Global live-map helpers.
+ * These are NOT CSS-module classes — they are plain global selectors
+ * used by LiveMap.tsx because Leaflet injects its own DOM nodes.
+ * Keep them here so they live alongside the page styles.
+ */
+:global(.live-map-wrap) {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+:global(#command-center-map) {
+  width: 100% !important;
+  height: 100% !important;
+  background: #111;          /* prevents flash of white before tiles load */
+}
+
+/* Leaflet popup theming — matches the dark dashboard palette */
+:global(.map-popup) {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #f1f5f9;
+}
+:global(.map-popup__num) {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+:global(.map-popup__addr) {
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+:global(.map-popup__tags) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+:global(.map-popup__desc) {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+:global(.leaflet-popup-content-wrapper) {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+  color: #f1f5f9 !important;
+}
+:global(.leaflet-popup-tip) {
+  background: #1e293b !important;
+}
+:global(.leaflet-popup-close-button) {
+  color: #94a3b8 !important;
+}
+
+/* ── Map overlays ───────────────────────────────────────────── */
+.mapControls {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  pointer-events: all;
+}
+
+.mapFab {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 20px rgba(239,68,68,0.5);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  animation: fab-rise 250ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.mapFab:hover { opacity: 0.9; transform: translateX(-50%) translateY(-2px); }
+@keyframes fab-rise {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
