@@ -1,46 +1,24 @@
-/**
- * MapLayerControl.tsx
- * Toggle buttons to show/hide ambulances, hospitals, and black spots on the map.
- * Tied globally to the mapStore so any part of the app can toggle visibility.
- */
-import React from 'react';
-import { useMapStore, type MapLayers } from '@/store/mapStore';
+import { useMapStore } from "../../../store/mapStore"
 
-export type { MapLayers };
-
-const layersList: { key: keyof MapLayers; label: string; color: string }[] = [
-  { key: 'incidents',  label: 'Incidents',  color: '#ef4444' },
-  { key: 'ambulances', label: 'Fleet',      color: '#3b82f6' },
-  { key: 'hospitals',  label: 'Hospitals',  color: '#10b981' },
-  { key: 'blackspots', label: 'Black Spots', color: '#f59e0b' },
-];
-
-const MapLayerControl: React.FC = () => {
-  const { layers, toggleLayer } = useMapStore();
-
+export function MapLayerControl() {
+  const store = useMapStore()
+  const layers = [
+    { key: "showHospitals", label: "Hospitals", color: "#3b82f6" },
+    { key: "showAmbulances", label: "Ambulances", color: "#10b981" },
+    { key: "showBlackSpots", label: "Black Spots", color: "#ef4444" },
+    { key: "showHeatmap", label: "Heatmap", color: "#f59e0b" },
+    { key: "showIncidents", label: "Incidents", color: "#8b5cf6" },
+  ]
   return (
-    <div className="map-layer-control" role="group" aria-label="Map layers">
-      {layersList.map(({ key, label, color }) => (
-        <button
-          key={key}
-          className={`map-layer-btn ${layers[key] ? 'map-layer-btn--active' : ''}`}
-          onClick={() => toggleLayer(key)}
-          aria-pressed={layers[key]}
-          style={layers[key]
-            ? { borderColor: color, background: `${color}22`, color }
-            : undefined}
-          title={`${layers[key] ? 'Hide' : 'Show'} ${label}`}
-        >
-          <span
-            className="map-layer-btn__dot"
-            style={{ background: layers[key] ? color : 'var(--color-text-disabled)' }}
-            aria-hidden="true"
-          />
-          {label}
-        </button>
+    <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1000, background: "#060d1aee", border: "1px solid #1f2937", borderRadius: 8, padding: "8px 10px" }}>
+      <div style={{ fontSize: 10, color: "#64748b", marginBottom: 6, fontWeight: 600 }}>MAP LAYERS</div>
+      {layers.map(l => (
+        <div key={l.key} onClick={() => store.toggle(l.key)}
+          style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, cursor: "pointer" }}>
+          <div style={{ width: 10, height: 10, borderRadius: 2, background: (store as any)[l.key] ? l.color : "#374151" }} />
+          <span style={{ fontSize: 11, color: (store as any)[l.key] ? "#f1f5f9" : "#64748b" }}>{l.label}</span>
+        </div>
       ))}
     </div>
-  );
-};
-
-export default MapLayerControl;
+  )
+}

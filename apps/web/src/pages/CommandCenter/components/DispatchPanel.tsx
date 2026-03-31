@@ -1,159 +1,64 @@
-/**
- * DispatchPanel.tsx
- * Modal/slide-over for reviewing and confirming a dispatch recommendation
- * for a selected incident.
- */
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DEMO_HOSPITALS } from '@/api/demo-fixtures';
-import { useIncidentStore } from '@/store/incidentStore';
-import { useAmbulanceStore } from '@/store/ambulanceStore';
+import { useState } from "react"
+import { dispatchApi } from "../../../api/index"
+import toast from "react-hot-toast"
 
-interface DispatchPanelProps {
-  incidentId: string | null;
-  onClose: () => void;
-}
+interface Props { incidentId: string; onClose: () => void }
 
-const DispatchPanel: React.FC<DispatchPanelProps> = ({ incidentId, onClose }) => {
-  const isDemo = import.meta.env.VITE_DEMO_MODE === 'true';
-  const navigate = useNavigate();
-  const [confirmed, setConfirmed] = useState(false);
-  const [loading, setLoading]     = useState(false);
+export function DispatchPanel({ incidentId, onClose }: Props) {
+  const [rec, setRec] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [selectedAmb, setSelectedAmb] = useState("")
+  const [selectedHosp, setSelectedHosp] = useState("")
 
-  const incidents = useIncidentStore((s) => s.incidents);
-  const updateIncidentStatus = useIncidentStore((s) => s.updateStatus);
-  
-  const ambulances = useAmbulanceStore((s) => s.ambulances);
-  const updateAmbulanceStatus = useAmbulanceStore((s) => s.updateAmbulanceStatus);
+  const loadRec = async () => {
+    setLoading(true)
+    const r = await dispatchApi.recommend(incidentId)
+    setRec(r.data)
+    if (r.data.ambulances?.[0]) setSelectedAmb(r.data.ambulances[0].ambulance_id)
+    if (r.data.hospitals?.[0]) setSelectedHosp(r.data.hospitals[0].hospital_id)
+    setLoading(false)
+  }
 
-  if (!incidentId) return null;
-
-  const incident  = incidents.find((i) => i.id === incidentId) || null;
-  const ambulance = ambulances.find((a) => a.status === 'AVAILABLE') || null;
-  const hospital  = isDemo ? DEMO_HOSPITALS[0] : null;
-
-  if (!incident) return null;
-
-  const handleConfirm = async () => {
-    if (!ambulance) return;
-    setLoading(true);
-    
-    // Trigger store updates (which syncs with the API in the background)
-    await updateIncidentStatus(incidentId, 'DISPATCHED');
-    updateAmbulanceStatus(ambulance.id, 'DISPATCHED');
-    
-    setLoading(false);
-    setConfirmed(true);
-    setTimeout(onClose, 1500);
-  };
+  const confirmDispatch = async () => {
+    await dispatchApi.confirm({ incident_id: incidentId, ambulance_id: selectedAmb, hospital_id: selectedHosp })
+    toast.success("Ambulance dispatched successfully")
+    onClose()
+  }
 
   return (
-    <>
-      <div className="dispatch-backdrop" onClick={onClose} aria-hidden="true" />
-      <aside
-        className="dispatch-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Dispatch recommendation"
-      >
-        {/* Header */}
-        <div className="dispatch-panel__header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h2 className="dispatch-panel__title">Dispatch Recommendation</h2>
-              <button 
-                onClick={() => navigate(`/incidents/${incident.id}`)}
-                style={{ background: 'var(--color-bg-primary)', border: '1px solid var(--color-border)', borderRadius: '4px', padding: '4px 8px', fontSize: '11px', color: 'var(--color-text-secondary)', cursor: 'pointer', fontWeight: 600 }}
-              >
-                Deep-Dive ↗
-              </button>
-            </div>
-            <p className="dispatch-panel__subtitle">{incident.incident_number}</p>
-          </div>
-          <button className="topbar__icon-btn" onClick={onClose} aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="dispatch-panel__body">
-          {/* Incident summary */}
-          <div className="dispatch-section">
-            <h3 className="dispatch-section__title">Incident</h3>
-            <p className="dispatch-detail">{incident.address_text}</p>
-            <p className="dispatch-detail dispatch-detail--dim">{incident.description}</p>
-            <div className="dispatch-tags">
-              <span className="dispatch-tag dispatch-tag--red">{incident.severity}</span>
-              <span className="dispatch-tag">{incident.accident_type.replace('_', ' ')}</span>
-              <span className="dispatch-tag">👤 {incident.patient_count} patients</span>
-            </div>
-          </div>
-
-          {/* Recommended ambulance */}
-          {ambulance ? (
-            <div className="dispatch-section">
-              <h3 className="dispatch-section__title">Closest Available Ambulance</h3>
-              <div className="dispatch-recommendation">
-                <div className="dispatch-rec__icon" aria-hidden="true">🚑</div>
-                <div className="dispatch-rec__info">
-                  <span className="dispatch-rec__reg">{ambulance.registration_no}</span>
-                  <span className="dispatch-rec__meta">
-                    {ambulance.ambulance_type} · {ambulance.district}
-                  </span>
-                  <span className="dispatch-rec__eta">ETA ~6 min · 4.2 km</span>
-                </div>
+    <div style={{ padding: 16, color: "#f1f5f9", fontFamily: "Arial" }}>
+      <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Dispatch Ambulance</h3>
+      {!rec ? (
+        <button onClick={loadRec} disabled={loading} style={{ width: "100%", padding: 10, background: "#3b82f6", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>
+          {loading ? "Loading..." : "Get Recommendations"}
+        </button>
+      ) : (
+        <>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Select Ambulance</label>
+            {rec.ambulances.map((a: any) => (
+              <div key={a.ambulance_id} onClick={() => setSelectedAmb(a.ambulance_id)}
+                style={{ padding: "8px 10px", background: selectedAmb === a.ambulance_id ? "#1e3a5f" : "#1e293b", border: `1px solid ${selectedAmb === a.ambulance_id ? "#3b82f6" : "#334155"}`, borderRadius: 6, marginBottom: 6, cursor: "pointer" }}>
+                <div style={{ fontSize: 12, fontWeight: 500 }}>{a.registration_no} · {a.ambulance_type}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>{a.district} · {a.distance_km?.toFixed(1)} km · ETA {a.eta_minutes?.toFixed(0)} min</div>
               </div>
-            </div>
-          ) : (
-            <div className="dispatch-section">
-              <p className="dispatch-detail dispatch-detail--warn">No available ambulances nearby</p>
-            </div>
-          )}
-
-          {/* Recommended hospital */}
-          {hospital && (
-            <div className="dispatch-section">
-              <h3 className="dispatch-section__title">Suggested Receiving Hospital</h3>
-              <div className="dispatch-recommendation">
-                <div className="dispatch-rec__icon" aria-hidden="true">🏥</div>
-                <div className="dispatch-rec__info">
-                  <span className="dispatch-rec__reg">{hospital.name}</span>
-                  <span className="dispatch-rec__meta">
-                    Trauma {hospital.trauma_level.replace('_', ' ')} · {hospital.district}
-                  </span>
-                  <span className="dispatch-rec__eta">
-                    ICU: {hospital.resources.icu_beds_available} beds · OT: {hospital.resources.ot_available ? '✓' : '✗'}
-                  </span>
-                </div>
+            ))}
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Select Hospital</label>
+            {rec.hospitals.map((h: any) => (
+              <div key={h.hospital_id} onClick={() => setSelectedHosp(h.hospital_id)}
+                style={{ padding: "8px 10px", background: selectedHosp === h.hospital_id ? "#1e3a5f" : "#1e293b", border: `1px solid ${selectedHosp === h.hospital_id ? "#3b82f6" : "#334155"}`, borderRadius: 6, marginBottom: 6, cursor: "pointer" }}>
+                <div style={{ fontSize: 12, fontWeight: 500 }}>{h.name}</div>
+                <div style={{ fontSize: 11, color: "#64748b" }}>{h.district} · {h.distance_km?.toFixed(1)} km · ICU: {h.icu_beds_available}</div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer actions */}
-        <div className="dispatch-panel__footer">
-          <button className="dispatch-btn dispatch-btn--ghost" onClick={onClose}>
-            Cancel
+            ))}
+          </div>
+          <button onClick={confirmDispatch} style={{ width: "100%", padding: 10, background: "#10b981", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>
+            Confirm Dispatch
           </button>
-          <button
-            className="dispatch-btn dispatch-btn--primary"
-            onClick={handleConfirm}
-            disabled={loading || confirmed || !ambulance}
-          >
-            {confirmed ? (
-              <>✓ Dispatched</>
-            ) : loading ? (
-              <><span className="btn-spinner" aria-hidden="true" /> Confirming…</>
-            ) : (
-              'Confirm Dispatch'
-            )}
-          </button>
-        </div>
-      </aside>
-    </>
-  );
-};
-
-export default DispatchPanel;
+        </>
+      )}
+    </div>
+  )
+}

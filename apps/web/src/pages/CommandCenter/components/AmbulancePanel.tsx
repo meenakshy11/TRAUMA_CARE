@@ -1,76 +1,31 @@
-/**
- * AmbulancePanel.tsx
- * Fleet status strip showing all ambulances with their real-time status.
- */
-import React from 'react';
-import { useAmbulanceStore } from '@/store/ambulanceStore';
-import StatusBadge from '@/components/StatusBadge';
+import { useEffect, useState } from "react"
+import { ambulancesApi } from "../../../api/index"
 
-const TYPE_BADGES: Record<string, string> = {
-  ALS:  '#3b82f6',
-  BLS:  '#22c55e',
-  NICU: '#8b5cf6',
-  MFR:  '#f59e0b',
-};
-
-function lastSeenLabel(iso: string): string {
-  const sec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (sec < 60) return `${sec}s`;
-  if (sec < 3600) return `${Math.floor(sec / 60)}m`;
-  return `${Math.floor(sec / 3600)}h`;
+const STATUS_COLOR: Record<string, string> = {
+  AVAILABLE: "#10b981", DISPATCHED: "#3b82f6", ON_SCENE: "#06b6d4",
+  TRANSPORTING: "#8b5cf6", AT_HOSPITAL: "#f59e0b", OFF_DUTY: "#64748b", MAINTENANCE: "#ef4444",
 }
 
-const AmbulancePanel: React.FC = () => {
-  const ambulances = useAmbulanceStore((s) => s.ambulances);
+export function AmbulancePanel() {
+  const [ambulances, setAmbulances] = useState<any[]>([])
 
-  const available  = ambulances.filter((a) => a.status === 'AVAILABLE').length;
-  const deployed   = ambulances.filter((a) => ['DISPATCHED','ON_SCENE','TRANSPORTING'].includes(a.status)).length;
+  useEffect(() => {
+    ambulancesApi.getAll().then(r => setAmbulances(Array.isArray(r.data) ? r.data : []))
+  }, [])
 
   return (
-    <aside className="ambulance-panel" aria-label="Fleet status">
-      <div className="panel-header">
-        <h2 className="panel-title">
-          Fleet
-          <span className="panel-badge panel-badge--green">{available} free</span>
-        </h2>
-        <span className="panel-subtitle">{deployed} deployed · {ambulances.length} total</span>
-      </div>
-
-      <ul className="ambulance-list" role="list">
-        {ambulances.map((amb) => {
-          const typeColor = TYPE_BADGES[amb.ambulance_type] ?? '#6b7280';
-
-          return (
-            <li key={amb.id} className="ambulance-card">
-              {/* Left: type + reg */}
-              <div className="ambulance-card__left">
-                <span
-                  className="ambulance-card__type"
-                  style={{ background: `${typeColor}22`, color: typeColor,
-                    border: `1px solid ${typeColor}44` }}
-                >
-                  {amb.ambulance_type}
-                </span>
-                <span className="ambulance-card__reg">{amb.registration_no}</span>
-                <span className="ambulance-card__district">{amb.district}</span>
-              </div>
-
-              {/* Right: status + last ping */}
-              <div className="ambulance-card__right">
-                <StatusBadge 
-                  status={amb.status} 
-                  pulse={amb.status === 'AVAILABLE'} 
-                />
-                <span className="ambulance-card__ping" title={`Last GPS ping: ${amb.last_location_at}`}>
-                  {lastSeenLabel(amb.last_location_at)} ago
-                </span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </aside>
-  );
-};
-
-export default AmbulancePanel;
+    <div>
+      {ambulances.map((amb: any) => (
+        <div key={amb.id} style={{ padding: "10px 14px", borderBottom: "1px solid #1f2937" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: "#f1f5f9" }}>{amb.registration_no}</div>
+            <span style={{ fontSize: 10, background: `${STATUS_COLOR[amb.status] || "#64748b"}22`, color: STATUS_COLOR[amb.status] || "#64748b", padding: "1px 6px", borderRadius: 4 }}>{amb.status}</span>
+          </div>
+          <div style={{ fontSize: 11, color: "#64748b", marginTop: 3 }}>{amb.district} · {amb.ambulance_type}</div>
+          {amb.current_lat && <div style={{ fontSize: 10, color: "#475569", marginTop: 2 }}>📍 {amb.current_lat?.toFixed(4)}, {amb.current_lon?.toFixed(4)}</div>}
+        </div>
+      ))}
+      {ambulances.length === 0 && <div style={{ padding: 20, textAlign: "center", color: "#64748b", fontSize: 13 }}>Loading ambulances...</div>}
+    </div>
+  )
+}

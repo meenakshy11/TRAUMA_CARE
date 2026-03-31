@@ -1,36 +1,15 @@
-/**
- * NotFoundPage.tsx — 404 page shown for unmatched routes.
- */
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '@/App';
+import { useNavigate } from "react-router-dom"
 
-const NotFoundPage: React.FC = () => (
-  <div
-    style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', minHeight: '100vh', gap: '16px',
-      background: 'var(--color-bg-primary)', textAlign: 'center', padding: '40px',
-    }}
-  >
-    <span style={{ fontSize: '64px' }}>🔍</span>
-    <h1 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-      404 — Page Not Found
-    </h1>
-    <p style={{ color: 'var(--color-text-secondary)', maxWidth: '380px' }}>
-      The page you're looking for doesn't exist or you don't have permission to view it.
-    </p>
-    <Link
-      to={ROUTES.COMMAND_CENTER}
-      style={{
-        padding: '10px 20px', background: 'rgba(239,68,68,0.15)',
-        border: '1px solid #ef4444', borderRadius: '8px',
-        color: '#fca5a5', fontWeight: 600, fontSize: '14px',
-      }}
-    >
-      ← Return to Dashboard
-    </Link>
-  </div>
-);
-
-export default NotFoundPage;
+export function NotFoundPage() {
+  const navigate = useNavigate()
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#0a0f1e", color: "#f1f5f9", fontFamily: "Arial" }}>
+      <div style={{ fontSize: 64, marginBottom: 16 }}>404</div>
+      <h2 style={{ margin: "0 0 8px" }}>Page not found</h2>
+      <p style={{ color: "#64748b", marginBottom: 24 }}>The page you are looking for does not exist.</p>
+      <button onClick={() => navigate("/command-center")} style={{ padding: "10px 20px", background: "#10b981", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 14 }}>
+        Back to Command Center
+      </button>
+    </div>
+  )
+}

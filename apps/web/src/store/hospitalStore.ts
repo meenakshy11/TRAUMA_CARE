@@ -1,65 +1,17 @@
-import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
-import { hospitalApi, type Hospital } from '@/api/hospitals.api';
+import { create } from "zustand"
 
-interface HospitalState {
-  hospitals: Hospital[];
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  fetchHospitals: () => Promise<void>;
-  
-  // Simulated Actions (Mocking live operations)
-  decrementIcuBed: (hospitalId: string) => void;
-  incrementIcuBed: (hospitalId: string) => void;
+interface HospitalStore {
+  hospitals: Record<string, any>
+  setHospitals: (hospitals: any[]) => void
+  updateResources: (id: string, resources: any) => void
 }
 
-export const useHospitalStore = create<HospitalState>()(
-  immer((set, get) => ({
-    hospitals: [],
-    isLoading: false,
-    error: null,
-
-    fetchHospitals: async () => {
-      // Prevent refetching if we already have the state hydrated during session
-      if (get().hospitals.length > 0) return;
-
-      set((state) => {
-        state.isLoading = true;
-        state.error = null;
-      });
-
-      try {
-        const data = await hospitalApi.getHospitals();
-        set((state) => {
-          state.hospitals = data;
-          state.isLoading = false;
-        });
-      } catch (err: unknown) {
-        set((state) => {
-          state.error = err instanceof Error ? err.message : 'Failed to fetch hospitals';
-          state.isLoading = false;
-        });
-      }
-    },
-
-    decrementIcuBed: (hospitalId) => {
-      set((state) => {
-        const h = state.hospitals.find((x) => x.id === hospitalId);
-        if (h && h.resources.icu_beds_available > 0) {
-          h.resources.icu_beds_available -= 1;
-        }
-      });
-    },
-
-    incrementIcuBed: (hospitalId) => {
-      set((state) => {
-        const h = state.hospitals.find((x) => x.id === hospitalId);
-        if (h && h.resources.icu_beds_available < h.resources.icu_beds_total) {
-          h.resources.icu_beds_available += 1;
-        }
-      });
-    },
-  }))
-);
+export const useHospitalStore = create<HospitalStore>((set) => ({
+  hospitals: {},
+  setHospitals: (hospitals) =>
+    set(() => ({ hospitals: Object.fromEntries(hospitals.map((h: any) => [h.id, h])) })),
+  updateResources: (id, resources) =>
+    set((s) => ({
+      hospitals: { ...s.hospitals, [id]: s.hospitals[id] ? { ...s.hospitals[id], resources: { ...s.hospitals[id].resources, ...resources } } : { id, resources } }
+    })),
+}))

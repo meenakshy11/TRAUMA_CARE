@@ -1,21 +1,5 @@
-/**
- * MCIBadge.tsx
- * Flashing "MCI" badge shown on incidents flagged as Mass Casualty Incidents.
- */
-import React from 'react';
-
-interface MCIBadgeProps {
-  patientCount?: number;
+export function MCIBadge() {
+  return (
+    <span style={{ background: "#ef444422", color: "#ef4444", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, border: "1px solid #ef444444" }}>MCI</span>
+  )
 }
-
-const MCIBadge: React.FC<MCIBadgeProps> = ({ patientCount }) => (
-  <span className="mci-badge" aria-label={`MCI — ${patientCount ?? '?'} patients`} title="Mass Casualty Incident">
-    <span className="mci-badge__dot" aria-hidden="true" />
-    MCI
-    {patientCount != null && (
-      <span className="mci-badge__count">{patientCount}pts</span>
-    )}
-  </span>
-);
-
-export default MCIBadge;
