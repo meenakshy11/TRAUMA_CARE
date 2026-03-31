@@ -27,40 +27,44 @@ export function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0f1e", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif" }}>
-      <div style={{ width: 400, padding: 40, background: "#111827", borderRadius: 12, border: "1px solid #1f2937" }}>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f2952 0%, #1a3a6b 50%, #2d5086 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ width: 420, padding: 40, background: "#ffffff", borderRadius: 12, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🚑</div>
-          <h1 style={{ color: "#f1f5f9", fontSize: 22, fontWeight: 700, margin: 0 }}>Government of Kerala</h1>
-          <p style={{ color: "#64748b", fontSize: 13, marginTop: 4 }}>Trauma Response & Emergency Management</p>
+          <div style={{ fontSize: 40, marginBottom: 8 }}>🚑</div>
+          <h1 style={{ color: "#0f2952", fontSize: 22, fontWeight: 700, margin: 0 }}>Government of Kerala</h1>
+          <p style={{ color: "#6b87b0", fontSize: 13, marginTop: 4 }}>Trauma Response & Emergency Management</p>
+          <div style={{ marginTop: 8, padding: "4px 12px", background: "#e8eef8", borderRadius: 20, display: "inline-block" }}>
+            <span style={{ fontSize: 11, color: "#1a3a6b", fontWeight: 600 }}>Integrated Trauma Care Platform v1.0</span>
+          </div>
         </div>
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: 16 }}>
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 6 }}>Email</label>
+            <label style={{ color: "#2d5086", fontSize: 13, display: "block", marginBottom: 6, fontWeight: 500 }}>Email Address</label>
             <input value={email} onChange={e => setEmail(e.target.value)} type="email" required
-              style={{ width: "100%", padding: "10px 12px", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, color: "#f1f5f9", fontSize: 14, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "10px 12px", background: "#f8faff", border: "1px solid #c8d8f0", borderRadius: 6, color: "#0f2952", fontSize: 14, boxSizing: "border-box", outline: "none" }} />
           </div>
           <div style={{ marginBottom: 24 }}>
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 6 }}>Password</label>
+            <label style={{ color: "#2d5086", fontSize: 13, display: "block", marginBottom: 6, fontWeight: 500 }}>Password</label>
             <input value={password} onChange={e => setPassword(e.target.value)} type="password" required
-              style={{ width: "100%", padding: "10px 12px", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, color: "#f1f5f9", fontSize: 14, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "10px 12px", background: "#f8faff", border: "1px solid #c8d8f0", borderRadius: 6, color: "#0f2952", fontSize: 14, boxSizing: "border-box", outline: "none" }} />
           </div>
           <button type="submit" disabled={loading}
-            style={{ width: "100%", padding: "12px", background: loading ? "#374151" : "#10b981", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}>
-            {loading ? "Signing in..." : "Sign In"}
+            style={{ width: "100%", padding: "12px", background: loading ? "#6b87b0" : "#1a3a6b", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}>
+            {loading ? "Signing in..." : "Sign In →"}
           </button>
         </form>
-        <div style={{ marginTop: 24, padding: 12, background: "#1e293b", borderRadius: 6 }}>
-          <p style={{ color: "#64748b", fontSize: 11, margin: "0 0 6px" }}>Demo credentials:</p>
+        <div style={{ marginTop: 24, padding: 14, background: "#f0f4ff", borderRadius: 8, border: "1px solid #c8d8f0" }}>
+          <p style={{ color: "#6b87b0", fontSize: 11, margin: "0 0 8px", fontWeight: 600 }}>DEMO CREDENTIALS — click to autofill</p>
           {[
             ["dispatcher@trauma.demo", "Demo@1234", "Dispatcher"],
             ["admin@trauma.demo", "Admin@1234", "Admin"],
             ["hospital@trauma.demo", "Hosp@1234", "Hospital Staff"],
             ["gov@trauma.demo", "Gov@1234", "Government"],
           ].map(([e, p, role]) => (
-            <div key={role} style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ color: "#10b981", fontSize: 11, cursor: "pointer" }} onClick={() => { setEmail(e); setPassword(p) }}>{role}</span>
-              <span style={{ color: "#475569", fontSize: 11 }}>{e}</span>
+            <div key={role} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, padding: "4px 6px", borderRadius: 4, cursor: "pointer", background: email === e ? "#dbeafe" : "transparent" }}
+              onClick={() => { setEmail(e); setPassword(p) }}>
+              <span style={{ color: "#1a3a6b", fontSize: 12, fontWeight: 500 }}>{role}</span>
+              <span style={{ color: "#6b87b0", fontSize: 11 }}>{e}</span>
             </div>
           ))}
         </div>
