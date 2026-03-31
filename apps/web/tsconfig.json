@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    /* ─── Language & Environment ──────────────────────────────────── */
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true,
+
+    /* ─── Module Resolution ───────────────────────────────────────── */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+
+    /* ─── JSX ────────────────────────────────────────────────────── */
+    "jsx": "react-jsx",
+
+    /* ─── Path Aliases (mirrors vite.config.ts resolve.alias) ────── */
+    "baseUrl": ".",
+    "paths": {
+      "@/*":             ["src/*"],
+      "@api/*":          ["src/api/*"],
+      "@components/*":   ["src/components/*"],
+      "@hooks/*":        ["src/hooks/*"],
+      "@pages/*":        ["src/pages/*"],
+      "@store/*":        ["src/store/*"],
+      "@styles/*":       ["src/styles/*"],
+      "@types/*":        ["src/types/*"],
+      "@utils/*":        ["src/utils/*"],
+      "@trauma/shared":  ["../../packages/shared/src"]
+    },
+
+    /* ─── Emit ───────────────────────────────────────────────────── */
+    "noEmit": true,
+
+    /* ─── Type Checking ──────────────────────────────────────────── */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
+
+    /* ─── Interop ────────────────────────────────────────────────── */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

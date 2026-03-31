@@ -1,0 +1,54 @@
+/* 
+ * theme.css 
+ * Semantic Component-Level Tokens and Alert Styles
+ * These extend the base design system defined in globals.css
+ * to guarantee visual standardization across the whole platform. 
+ */
+
+:root {
+  /* ─── Semantic Alert Tokens (Enterprise Design System) ─────────────────── */
+  
+  --theme-alert-success-bg:     rgba(34, 197, 94, 0.15);
+  --theme-alert-success-border: rgba(34, 197, 94, 0.3);
+  --theme-alert-success-text:   #86efac;
+
+  --theme-alert-warning-bg:     rgba(245, 158, 11, 0.15);
+  --theme-alert-warning-border: rgba(245, 158, 11, 0.3);
+  --theme-alert-warning-text:   #fcd34d;
+
+  --theme-alert-danger-bg:      rgba(239, 68, 68, 0.15);
+  --theme-alert-danger-border:  rgba(239, 68, 68, 0.3);
+  --theme-alert-danger-text:    #fca5a5;
+
+  --theme-alert-info-bg:        rgba(59, 130, 246, 0.15);
+  --theme-alert-info-border:    rgba(59, 130, 246, 0.3);
+  --theme-alert-info-text:      #93c5fd;
+
+  /* ─── Triage Protocol Extracted Values ─────────────────────────────── */
+  --theme-triage-red:    #ef4444; /* Immediate */
+  --theme-triage-yellow: #facc15; /* Delayed */
+  --theme-triage-green:  #22c55e; /* Minor */
+  --theme-triage-black:  #1f2937; /* Deceased */
+}
+
+/* Base Component classes for quick consumption */
+.theme-pill-success {
+  background: var(--theme-alert-success-bg);
+  border: 1px solid var(--theme-alert-success-border);
+  color: var(--theme-alert-success-text);
+}
+.theme-pill-warning {
+  background: var(--theme-alert-warning-bg);
+  border: 1px solid var(--theme-alert-warning-border);
+  color: var(--theme-alert-warning-text);
+}
+.theme-pill-danger {
+  background: var(--theme-alert-danger-bg);
+  border: 1px solid var(--theme-alert-danger-border);
+  color: var(--theme-alert-danger-text);
+}
+.theme-pill-info {
+  background: var(--theme-alert-info-bg);
+  border: 1px solid var(--theme-alert-info-border);
+  color: var(--theme-alert-info-text);
+}
