@@ -71,8 +71,6 @@ const BlackSpotHeatmap: React.FC<BlackSpotHeatmapProps> = ({
 
     L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
 
-
-
     layerRef.current = L.layerGroup().addTo(map);
     mapRef.current   = map;
     setReady(true);
@@ -157,18 +155,18 @@ const BlackSpotHeatmap: React.FC<BlackSpotHeatmapProps> = ({
         marker.bindPopup(
           `<div style="font-family:sans-serif;min-width:200px">
             <div style="font-size:13px;font-weight:800;color:${color};margin-bottom:6px">${spot.name}</div>
-            <div style="color:#94a3b8;font-size:11px;margin-bottom:2px">📍 ${spot.road_name} · ${spot.district}</div>
+            <div style="color:#6b7280;font-size:11px;margin-bottom:2px">📍 ${spot.road_name} · ${spot.district}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
-              <div style="background:#1e293b;padding:6px 8px;border-radius:4px;text-align:center">
-                <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Risk Score</div>
+              <div style="background:#f1f5f9;padding:6px 8px;border-radius:4px;text-align:center">
+                <div style="color:#6b7280;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Risk Score</div>
                 <div style="color:${color};font-size:18px;font-weight:800;font-family:monospace">${spot.risk_score}</div>
               </div>
-              <div style="background:#1e293b;padding:6px 8px;border-radius:4px;text-align:center">
-                <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Incidents</div>
-                <div style="color:#f1f5f9;font-size:18px;font-weight:800;font-family:monospace">${spot.incident_count}</div>
+              <div style="background:#f1f5f9;padding:6px 8px;border-radius:4px;text-align:center">
+                <div style="color:#6b7280;font-size:9px;text-transform:uppercase;letter-spacing:0.06em">Incidents</div>
+                <div style="color:#1e293b;font-size:18px;font-weight:800;font-family:monospace">${spot.incident_count}</div>
               </div>
             </div>
-            <div style="color:#94a3b8;font-size:11px;line-height:1.5">${spot.description}</div>
+            <div style="color:#374151;font-size:11px;line-height:1.5">${spot.description}</div>
           </div>`,
           { maxWidth: 280 },
         );

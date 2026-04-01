@@ -17,7 +17,7 @@ export function IncidentMap({ latitude, longitude }: { latitude: number; longitu
       scrollWheelZoom: false,
     })
 
-    // Bright OSM tiles — detailed, Google Maps-like
+    // Bright, detailed OSM tiles — Google Maps-like
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',

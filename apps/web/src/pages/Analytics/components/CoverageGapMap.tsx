@@ -89,8 +89,8 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
       zone.bindTooltip(
         `<div style="font-family:sans-serif;font-size:12px;min-width:160px">
           <strong style="color:${color}">${s.district}</strong><br/>
-          <span style="color:#94a3b8">Golden Hour: <b style="color:${color}">${s.golden_hour_pct}%</b></span><br/>
-          <span style="color:#94a3b8">Incidents: ${s.total_incidents} · Avg: ${s.avg_response_min.toFixed(1)} min</span>
+          <span style="color:#374151">Golden Hour: <b style="color:${color}">${s.golden_hour_pct}%</b></span><br/>
+          <span style="color:#6b7280">Incidents: ${s.total_incidents} · Avg: ${s.avg_response_min.toFixed(1)} min</span>
         </div>`,
         { sticky: true },
       );
@@ -100,7 +100,7 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
       // District label
       L.marker(coords, {
         icon: L.divIcon({
-          html: `<div style="font-size:11px;font-weight:800;color:#1e293b;background:${color}22;border:1px solid ${color};padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,0.15)">
+          html: `<div style="font-size:11px;font-weight:800;color:#1e293b;background:${color}22;border:1px solid ${color};padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,0.12)">
             ${s.district}
           </div>`,
           className: '',

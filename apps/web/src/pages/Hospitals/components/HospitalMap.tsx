@@ -1,6 +1,5 @@
 /**
  * HospitalMap.tsx
- *
  * Mini Leaflet map showing a single hospital's location
  * using bright, detailed OpenStreetMap tiles (Google Maps style).
  */

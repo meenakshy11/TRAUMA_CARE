@@ -36,7 +36,7 @@ export function LiveMap() {
     const L = window.L
     const map = L.map(mapRef.current, { zoomControl: false }).setView([10.5, 76.2], 8)
 
-    // Detailed bright OSM tiles — Google Maps-like appearance
+    // Bright, detailed OSM tiles — Google Maps-like appearance
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
       maxZoom: 19,
