@@ -53,10 +53,13 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
       scrollWheelZoom: true,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 14,
-      subdomains: 'abcd',
+    // Bright, detailed OSM tiles — Google Maps-like appearance
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
     }).addTo(map);
+
+    L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
 
     // Draw district coverage zones
     stats.forEach((s) => {
@@ -97,7 +100,7 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
       // District label
       L.marker(coords, {
         icon: L.divIcon({
-          html: `<div style="font-size:10px;font-weight:700;color:${color};text-shadow:0 0 4px #000,0 0 8px #000;white-space:nowrap;pointer-events:none">
+          html: `<div style="font-size:11px;font-weight:800;color:#1e293b;background:${color}22;border:1px solid ${color};padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,0.15)">
             ${s.district}
           </div>`,
           className: '',
@@ -172,12 +175,12 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
         ].map(({ label, color }) => (
           <div key={label} style={legendItem}>
             <span style={{ ...legendDot, background: color }} />
-            <span style={{ fontSize: 10, color: '#94a3b8' }}>{label}</span>
+            <span style={{ fontSize: 10, color: '#374151' }}>{label}</span>
           </div>
         ))}
-        <div style={{ ...legendItem, marginTop: 6, paddingTop: 6, borderTop: '1px solid #334155' }}>
+        <div style={{ ...legendItem, marginTop: 6, paddingTop: 6, borderTop: '1px solid #e2e8f0' }}>
           <span style={{ ...legendDot, background: '#fff', border: '2px solid #3b82f6', borderRadius: 3 }} />
-          <span style={{ fontSize: 10, color: '#94a3b8' }}>Trauma Hospital</span>
+          <span style={{ fontSize: 10, color: '#374151' }}>Trauma Hospital</span>
         </div>
       </div>
     </div>
@@ -188,13 +191,14 @@ const CoverageGapMap: React.FC<CoverageGapMapProps> = ({ stats }) => {
 
 const legend: React.CSSProperties = {
   position: 'absolute', bottom: 16, left: 16, zIndex: 1000,
-  background: 'rgba(15,23,42,0.88)', border: '1px solid #334155',
+  background: 'rgba(255,255,255,0.92)', border: '1px solid #e2e8f0',
   borderRadius: 8, padding: '10px 14px',
   backdropFilter: 'blur(4px)',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
   display: 'flex', flexDirection: 'column', gap: 5,
 };
 const legendTitle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: '#64748b',
+  fontSize: 10, fontWeight: 700, color: '#475569',
   textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4,
 };
 const legendItem: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 8 };

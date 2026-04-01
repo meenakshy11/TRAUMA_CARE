@@ -63,14 +63,15 @@ const BlackSpotHeatmap: React.FC<BlackSpotHeatmapProps> = ({
       attributionControl: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // Bright, detailed OSM tiles — Google Maps-like appearance
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      subdomains: 'abcd',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
     }).addTo(map);
 
-    L.control.attribution({ position: 'bottomright', prefix: false })
-      .addAttribution('© <a href="https://carto.com/" target="_blank">CARTO</a>')
-      .addTo(map);
+    L.control.scale({ position: 'bottomright', imperial: false }).addTo(map);
+
+
 
     layerRef.current = L.layerGroup().addTo(map);
     mapRef.current   = map;
@@ -122,12 +123,12 @@ const BlackSpotHeatmap: React.FC<BlackSpotHeatmapProps> = ({
         });
 
         coreCircle.bindTooltip(
-          `<div style="font-family:sans-serif;font-size:12px;line-height:1.4;padding:2px 4px;">
+          `<div style="font-family:sans-serif;font-size:12px;line-height:1.6;padding:4px 6px;">
             <strong style="color:${color}">${spot.name}</strong><br/>
-            <span style="color:#94a3b8">Risk Score: <b style="color:${color}">${spot.risk_score}/10</b></span><br/>
-            <span style="color:#94a3b8">Incidents: ${spot.incident_count}</span>
+            <span style="color:#374151">Risk Score: <b style="color:${color}">${spot.risk_score}/10</b></span><br/>
+            <span style="color:#6b7280">Incidents: ${spot.incident_count}</span>
           </div>`,
-          { sticky: true, className: 'dark-tooltip' },
+          { sticky: true },
         );
 
         coreCircle.on('click', () => onSelect(spot.id));

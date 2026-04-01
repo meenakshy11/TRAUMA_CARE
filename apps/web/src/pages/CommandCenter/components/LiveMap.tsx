@@ -35,10 +35,15 @@ export function LiveMap() {
     if (!mapRef.current || mapInstanceRef.current || !window.L) return
     const L = window.L
     const map = L.map(mapRef.current, { zoomControl: false }).setView([10.5, 76.2], 8)
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: "© OSM © CartoDB", subdomains: "abcd", maxZoom: 19
+
+    // Detailed bright OSM tiles — Google Maps-like appearance
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+      maxZoom: 19,
     }).addTo(map)
+
     L.control.zoom({ position: "bottomright" }).addTo(map)
+    L.control.scale({ position: "bottomleft", imperial: false }).addTo(map)
     mapInstanceRef.current = map
   }
 
@@ -48,12 +53,22 @@ export function LiveMap() {
     const L = window.L
     Object.values(incidents).forEach((inc: any) => {
       const color = SEVERITY_COLOR[inc.severity] || "#64748b"
-      const icon = L.divIcon({ className: "", html: `<div style="width:12px;height:12px;background:${color};border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px ${color}"></div>`, iconSize: [12,12], iconAnchor: [6,6] })
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 8px ${color}99"></div>`,
+        iconSize: [14, 14], iconAnchor: [7, 7]
+      })
       if (markersRef.current.incidents[inc.id]) {
         markersRef.current.incidents[inc.id].setLatLng([inc.latitude, inc.longitude])
       } else {
         const m = L.marker([inc.latitude, inc.longitude], { icon }).addTo(map)
-        m.bindPopup(`<b>${inc.incident_number}</b><br>${inc.severity} · ${inc.status?.replace(/_/g," ")}<br>${inc.district || ""}`)
+        m.bindPopup(
+          `<div style="font-family:sans-serif;min-width:190px;padding:2px">
+            <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:4px">${inc.incident_number}</div>
+            <div style="font-size:12px;color:#374151">${inc.severity} · ${inc.status?.replace(/_/g," ")}</div>
+            <div style="font-size:11px;color:#6b7280;margin-top:3px">📍 ${inc.district || ""}</div>
+          </div>`
+        )
         markersRef.current.incidents[inc.id] = m
       }
     })
@@ -63,9 +78,17 @@ export function LiveMap() {
     const map = mapInstanceRef.current
     if (!map || !window.L) return
     const L = window.L
-    if (!mapStore.showAmbulances) { Object.values(markersRef.current.ambulances).forEach((m: any) => m.remove()); markersRef.current.ambulances = {}; return }
+    if (!mapStore.showAmbulances) {
+      Object.values(markersRef.current.ambulances).forEach((m: any) => m.remove())
+      markersRef.current.ambulances = {}
+      return
+    }
     Object.entries(positions).forEach(([id, pos]: [string, any]) => {
-      const icon = L.divIcon({ className: "", html: `<div style="font-size:18px;filter:drop-shadow(0 0 4px #10b981)">🚑</div>`, iconSize: [20,20], iconAnchor: [10,10] })
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="background:#1d4ed8;border:2.5px solid #fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 10px rgba(29,78,216,0.5)">🚑</div>`,
+        iconSize: [28, 28], iconAnchor: [14, 14]
+      })
       if (markersRef.current.ambulances[id]) {
         markersRef.current.ambulances[id].setLatLng([pos.lat, pos.lon])
       } else {
@@ -82,14 +105,24 @@ export function LiveMap() {
     markersRef.current.hospitals = []
     if (!mapStore.showHospitals) return
     Object.values(hospitals).forEach((h: any) => {
-      const icon = L.divIcon({ className: "", html: `<div style="font-size:16px">🏥</div>`, iconSize: [20,20], iconAnchor: [10,10] })
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="background:#fff;border:2.5px solid #1d4ed8;border-radius:5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1d4ed8;box-shadow:0 2px 8px rgba(0,0,0,0.2)">H</div>`,
+        iconSize: [26, 26], iconAnchor: [13, 13]
+      })
       const m = L.marker([h.latitude, h.longitude], { icon }).addTo(map)
-      m.bindPopup(`<b>${h.name}</b><br>${h.trauma_level?.replace("_"," ")}<br>ICU: ${h.resources?.icu_beds_available || 0}/${h.resources?.icu_beds_total || 0}`)
+      m.bindPopup(
+        `<div style="font-family:sans-serif;min-width:180px;padding:2px">
+          <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:4px">${h.name}</div>
+          <div style="font-size:11px;color:#374151">${h.trauma_level?.replace("_"," ")}</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:3px">ICU: ${h.resources?.icu_beds_available || 0}/${h.resources?.icu_beds_total || 0}</div>
+        </div>`
+      )
       markersRef.current.hospitals.push(m)
     })
   }, [hospitals, mapStore.showHospitals])
 
   return (
-    <div ref={mapRef} style={{ width: "100%", height: "100%", background: "#0a0f1e" }} />
+    <div ref={mapRef} style={{ width: "100%", height: "100%", background: "#e8eef4" }} />
   )
 }

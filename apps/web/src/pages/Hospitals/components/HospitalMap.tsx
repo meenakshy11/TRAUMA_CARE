@@ -2,13 +2,7 @@
  * HospitalMap.tsx
  *
  * Mini Leaflet map showing a single hospital's location
- * with a styled marker and a radius circle representing
- * the estimated service catchment area.
- *
- * Props:
- *  lat, lng    — coordinates
- *  name        — hospital display name
- *  traumaLevel — 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3'
+ * using bright, detailed OpenStreetMap tiles (Google Maps style).
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -37,16 +31,19 @@ const HospitalMap: React.FC<HospitalMapProps> = ({ lat, lng, name, traumaLevel }
 
     const map = L.map(containerRef.current, {
       center: [lat, lng],
-      zoom: 13,
-      zoomControl: false,
-      attributionControl: false,
+      zoom: 14,
+      zoomControl: true,
+      attributionControl: true,
       scrollWheelZoom: false,
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 18,
-      subdomains: 'abcd',
+    // Bright, detailed OSM tiles — Google Maps-like
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
     }).addTo(map);
+
+    L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
 
     const color = LEVEL_COLORS[traumaLevel] ?? '#3b82f6';
 
@@ -54,32 +51,34 @@ const HospitalMap: React.FC<HospitalMapProps> = ({ lat, lng, name, traumaLevel }
     L.circle([lat, lng], {
       radius: 8000,
       color,
-      weight: 1,
+      weight: 2,
       fillColor: color,
-      fillOpacity: 0.07,
+      fillOpacity: 0.08,
+      dashArray: '6 4',
     }).addTo(map);
 
     // Hospital marker
     const icon = L.divIcon({
       html: `<div style="
-        width:36px;height:36px;
+        width:38px;height:38px;
         background:${color};
         border:3px solid #fff;
         border-radius:50%;
         display:flex;align-items:center;justify-content:center;
-        font-size:16px;font-weight:900;color:#fff;
-        box-shadow:0 4px 12px rgba(0,0,0,0.5),0 0 0 4px ${color}44;
+        font-size:18px;font-weight:900;color:#fff;
+        box-shadow:0 4px 14px rgba(0,0,0,0.3),0 0 0 4px ${color}44;
       ">H</div>`,
       className: '',
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
+      iconSize: [38, 38],
+      iconAnchor: [19, 19],
     });
 
     L.marker([lat, lng], { icon })
       .bindPopup(
-        `<div style="font-family:sans-serif;text-align:center;padding:4px 8px">
+        `<div style="font-family:sans-serif;text-align:center;padding:6px 10px;min-width:160px">
           <strong style="color:${color};font-size:13px">${name}</strong><br/>
-          <span style="color:#94a3b8;font-size:11px">${traumaLevel.replace('_', ' ')}</span>
+          <span style="color:#6b7280;font-size:11px;margin-top:3px;display:block">${traumaLevel.replace('_', ' ')}</span>
+          <span style="color:#374151;font-size:11px">📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}</span>
         </div>`,
         { closeButton: false },
       )
