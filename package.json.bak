@@ -4,12 +4,6 @@
   "private": true,
   "description": "Root workspace for the Integrated Trauma Care Platform",
   "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "dev:web": "cd apps/web && npm run dev",
-    "dev:backend": "cd apps/backend && python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
-    "build:web": "cd apps/web && npm run build"
-  }
+    "apps/*"
+  ]
 }

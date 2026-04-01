@@ -1,9 +1,0 @@
-{
-  "name": "integrated-trauma-care-platform",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Root workspace for the Integrated Trauma Care Platform",
-  "workspaces": [
-    "apps/*"
-  ]
-}

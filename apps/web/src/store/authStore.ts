@@ -1,27 +1,53 @@
 import { create } from "zustand"
 
-const DEMO = import.meta.env.VITE_DEMO_MODE === "true"
+interface User {
+  id: string
+  email: string
+  full_name: string
+  role: string
+  hospital_id?: string | null
+  ambulance_id?: string | null
+}
 
 interface AuthStore {
-  user: any | null
+  user: User | null
   token: string | null
   isAuthenticated: boolean
-  login: (user: any, token: string) => void
+  login: (user: User, token: string) => void
   logout: () => void
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-  token: localStorage.getItem("access_token"),
-  // In demo mode the user starts as authenticated (no real login needed),
-  // but an explicit logout() will always set this to false.
-  isAuthenticated: DEMO ? true : !!localStorage.getItem("access_token"),
-  login: (user, token) => {
-    localStorage.setItem("access_token", token)
-    set({ user, token, isAuthenticated: true })
-  },
-  logout: () => {
-    localStorage.removeItem("access_token")
-    set({ user: null, token: null, isAuthenticated: false })
-  },
-}))
+const clearOldKeys = () => {
+  localStorage.removeItem("access_token")
+  localStorage.removeItem("refresh_token")
+}
+
+const savedUser = (): User | null => {
+  try {
+    const u = localStorage.getItem("trauma_user")
+    const t = localStorage.getItem("trauma_token")
+    if (!u || !t) return null
+    return JSON.parse(u)
+  } catch { return null }
+}
+
+export const useAuthStore = create<AuthStore>((set) => {
+  clearOldKeys()
+  return {
+    user: savedUser(),
+    token: localStorage.getItem("trauma_token"),
+    isAuthenticated: !!localStorage.getItem("trauma_token"),
+    login: (user, token) => {
+      localStorage.setItem("trauma_token", token)
+      localStorage.setItem("trauma_user", JSON.stringify(user))
+      set({ user, token, isAuthenticated: true })
+    },
+    logout: () => {
+      localStorage.removeItem("trauma_token")
+      localStorage.removeItem("trauma_user")
+      localStorage.removeItem("access_token")
+      set({ user: null, token: null, isAuthenticated: false })
+      window.location.replace("/login")
+    },
+  }
+})

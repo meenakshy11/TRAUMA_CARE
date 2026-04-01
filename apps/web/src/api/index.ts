@@ -185,7 +185,9 @@ export const authApi = {
     if (DEMO) {
       const { DEMO_USERS } = await import("./demo-fixtures")
       const match = DEMO_USERS[email]
-      if (match && match.password === password) return { data: { ...match.tokens, user: match.user } }
+      if (match && match.password === password) {
+        return { data: { access_token: match.tokens.access_token, user: match.user } }
+      }
       throw new Error("Invalid credentials")
     }
     return apiClient.post("/auth/login", { email, password })
