@@ -1,37 +1,58 @@
-interface DevBannerProps {
-  feature: string
-  description: string
-  progress: number
-  eta?: string
-}
-
-export function DevBanner({ feature, description, progress, eta }: DevBannerProps) {
+export function DevBanner({ feature, description, progress, eta }: any) {
   return (
-    <div style={{ background: "#1c1500", border: "1px solid #f59e0b44", borderRadius: 8, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 16 }}>
-      <div style={{ background: "#f59e0b22", borderRadius: 6, padding: "4px 8px", fontSize: 11, color: "#f59e0b", fontWeight: 600, whiteSpace: "nowrap" }}>IN DEVELOPMENT</div>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 500, color: "#fbbf24", marginBottom: 4 }}>{feature}</div>
-        <div style={{ fontSize: 12, color: "#92400e" }}>{description}</div>
-        <div style={{ marginTop: 6, background: "#1e293b", borderRadius: 4, height: 4, overflow: "hidden" }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: "linear-gradient(90deg, #f59e0b, #10b981)", borderRadius: 4 }} />
+    <div style={{
+      background: "var(--color-bg-tertiary)",
+      border: "1px solid var(--color-border)",
+      borderRadius: "var(--radius-md)",
+      padding: "16px 20px",
+      marginBottom: "24px",
+      display: "flex",
+      alignItems: "center",
+      gap: "20px",
+      boxShadow: "var(--shadow-card)",
+      position: "relative",
+      overflow: "hidden"
+    }}>
+      {/* Decorative background glow */}
+      <div style={{ position: "absolute", right: "-10%", top: "-50%", width: "200px", height: "200px", background: "radial-gradient(circle, var(--color-accent-cyan-glow) 0%, transparent 60%)", pointerEvents: "none" }} />
+      
+      <div style={{
+        background: "rgba(245, 158, 11, 0.15)",
+        border: "1px solid rgba(245, 158, 11, 0.3)",
+        borderRadius: "var(--radius-sm)",
+        padding: "6px 10px",
+        fontSize: "11px",
+        color: "var(--color-warning)",
+        fontWeight: 700,
+        whiteSpace: "nowrap",
+        textTransform: "uppercase",
+        letterSpacing: "0.5px"
+      }}>
+        IN DEVELOPMENT
+      </div>
+
+      <div style={{ flex: 1, zIndex: 1 }}>
+        <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "4px" }}>
+          {feature}
         </div>
-        <div style={{ fontSize: 11, color: "#78350f", marginTop: 3 }}>{progress}% complete{eta ? ` · ETA: ${eta}` : ""}</div>
+        <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: 1.5 }}>
+          {description}
+        </div>
+        
+        <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ flex: 1, background: "var(--color-bg-hover)", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+            <div style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "linear-gradient(90deg, var(--color-warning), var(--color-success))",
+              borderRadius: "99px"
+            }} />
+          </div>
+          <div style={{ fontSize: "11px", color: "var(--color-text-muted)", fontFamily: "var(--font-mono)" }}>
+            {progress}%{eta ? ` · ETA ${eta}` : ""}
+          </div>
+        </div>
       </div>
     </div>
-  )
-}
-
-export function FeatureStatusBadge({ status }: { status: "live" | "development" | "planned" }) {
-  const config = {
-    live: { label: "LIVE", color: "#10b981" },
-    development: { label: "IN DEVELOPMENT", color: "#f59e0b" },
-    planned: { label: "PLANNED", color: "#6366f1" },
-  }
-  const c = config[status]
-  return (
-    <span style={{ color: c.color, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, border: `1px solid ${c.color}44`, display: "inline-flex", alignItems: "center", gap: 4 }}>
-      <span style={{ width: 5, height: 5, borderRadius: "50%", background: c.color, display: "inline-block" }} />
-      {c.label}
-    </span>
   )
 }

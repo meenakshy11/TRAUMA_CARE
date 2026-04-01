@@ -1,37 +1,118 @@
-/* 
- * theme.css 
- * Semantic Component-Level Tokens and Alert Styles
- * These extend the base design system defined in globals.css
- * to guarantee visual standardization across the whole platform. 
+/*
+ * theme.css
+ * Complete Design System Token Foundation
+ * Supports dark/light mode via [data-theme] on <html>
+ * Dark mode is the default (no attribute needed, or data-theme="dark")
  */
 
-:root {
-  /* ─── Semantic Alert Tokens (Enterprise Design System) ─────────────────── */
-  
-  --theme-alert-success-bg:     rgba(34, 197, 94, 0.15);
-  --theme-alert-success-border: rgba(34, 197, 94, 0.3);
-  --theme-alert-success-text:   #86efac;
+/* ─── DARK MODE (default) ──────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  /* Background Layers */
+  --color-bg-primary:    #0a0e1a;
+  --color-bg-secondary:  #0f1623;
+  --color-bg-tertiary:   #161d2e;
+  --color-bg-hover:      #1c2438;
 
-  --theme-alert-warning-bg:     rgba(245, 158, 11, 0.15);
-  --theme-alert-warning-border: rgba(245, 158, 11, 0.3);
+  /* Borders */
+  --color-border:        #1e2a3d;
+  --color-border-strong: #2a3a54;
+
+  /* Text */
+  --color-text-primary:   #e8edf5;
+  --color-text-secondary: #8a99b3;
+  --color-text-muted:     #4a5878;
+
+  /* Accent */
+  --color-accent-blue:       #3b82f6;
+  --color-accent-blue-hover: #2563eb;
+  --color-accent-cyan:       #06b6d4;
+  --color-accent-cyan-glow:  rgba(6, 182, 212, 0.15);
+
+  /* Semantic Status */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger:  #ef4444;
+  --color-danger-glow: rgba(239, 68, 68, 0.12);
+  --color-critical: #ff3b3b;
+
+  /* Triage Protocol */
+  --color-triage-red:    #dc2626;
+  --color-triage-yellow: #d97706;
+  --color-triage-green:  #16a34a;
+  --color-triage-black:  #374151;
+
+  /* Shadows */
+  --shadow-card:     0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-elevated: 0 4px 20px rgba(0,0,0,0.5);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Transitions */
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Alert Semantic Tokens */
+  --theme-alert-success-bg:     rgba(16, 185, 129, 0.12);
+  --theme-alert-success-border: rgba(16, 185, 129, 0.25);
+  --theme-alert-success-text:   #6ee7b7;
+
+  --theme-alert-warning-bg:     rgba(245, 158, 11, 0.12);
+  --theme-alert-warning-border: rgba(245, 158, 11, 0.25);
   --theme-alert-warning-text:   #fcd34d;
 
-  --theme-alert-danger-bg:      rgba(239, 68, 68, 0.15);
-  --theme-alert-danger-border:  rgba(239, 68, 68, 0.3);
+  --theme-alert-danger-bg:      rgba(239, 68, 68, 0.12);
+  --theme-alert-danger-border:  rgba(239, 68, 68, 0.25);
   --theme-alert-danger-text:    #fca5a5;
 
-  --theme-alert-info-bg:        rgba(59, 130, 246, 0.15);
-  --theme-alert-info-border:    rgba(59, 130, 246, 0.3);
+  --theme-alert-info-bg:        rgba(59, 130, 246, 0.12);
+  --theme-alert-info-border:    rgba(59, 130, 246, 0.25);
   --theme-alert-info-text:      #93c5fd;
 
-  /* ─── Triage Protocol Extracted Values ─────────────────────────────── */
-  --theme-triage-red:    #ef4444; /* Immediate */
-  --theme-triage-yellow: #facc15; /* Delayed */
-  --theme-triage-green:  #22c55e; /* Minor */
-  --theme-triage-black:  #1f2937; /* Deceased */
+  /* Triage Extracted Values (legacy compat) */
+  --theme-triage-red:    #dc2626;
+  --theme-triage-yellow: #d97706;
+  --theme-triage-green:  #16a34a;
+  --theme-triage-black:  #374151;
+
+  /* Glass overlay backgrounds */
+  --color-glass-panel: rgba(15, 22, 35, 0.92);
+  --color-glass-blur: blur(12px);
 }
 
-/* Base Component classes for quick consumption */
+/* ─── LIGHT MODE OVERRIDES ─────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --color-bg-primary:    #f1f5f9;
+  --color-bg-secondary:  #ffffff;
+  --color-bg-tertiary:   #f8fafc;
+  --color-bg-hover:      #f1f5f9;
+
+  --color-border:        #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94a3b8;
+
+  --shadow-card:     0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-elevated: 0 4px 20px rgba(0,0,0,0.1);
+
+  --theme-alert-success-text: #059669;
+  --theme-alert-warning-text: #b45309;
+  --theme-alert-danger-text:  #dc2626;
+  --theme-alert-info-text:    #2563eb;
+
+  --color-glass-panel: rgba(248, 250, 252, 0.92);
+}
+
+/* ─── Base Component Classes ───────────────────────────────────────────────── */
 .theme-pill-success {
   background: var(--theme-alert-success-bg);
   border: 1px solid var(--theme-alert-success-border);
@@ -52,3 +133,10 @@
   border: 1px solid var(--theme-alert-info-border);
   color: var(--theme-alert-info-text);
 }
+
+/* ─── Semantic Status Badge Classes ───────────────────────────────────────── */
+.status-available   { background: rgba(16,185,129,0.12); color: var(--color-success); }
+.status-busy        { background: rgba(245,158,11,0.12); color: var(--color-warning); }
+.status-critical    { background: rgba(239,68,68,0.12); color: var(--color-danger); animation: pulse-ring 2s ease-in-out infinite; }
+.status-live        { animation: pulse-ring 2s ease-in-out infinite; }
+.status-offline     { background: rgba(74,88,120,0.15); color: var(--color-text-muted); }

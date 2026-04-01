@@ -89,6 +89,7 @@ async def get_active_incidents(db: AsyncSession) -> List[Incident]:
     closed = [IncidentStatus.CLOSED, IncidentStatus.CANCELLED]
     result = await db.execute(
         select(Incident)
+        .options(selectinload(Incident.timeline))
         .where(Incident.status.notin_(closed))
         .order_by(desc(Incident.created_at))
     )

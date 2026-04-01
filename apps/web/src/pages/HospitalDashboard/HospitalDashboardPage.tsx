@@ -1,21 +1,7 @@
 import { useEffect, useState } from "react"
 import { hospitalsApi } from "../../api/index"
-
-function DevBanner({ feature, description, progress, eta }: any) {
-  return (
-    <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 16 }}>
-      <div style={{ background: "#fef3c7", borderRadius: 6, padding: "4px 8px", fontSize: 11, color: "#92400e", fontWeight: 700, whiteSpace: "nowrap" }}>IN DEVELOPMENT</div>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#78350f", marginBottom: 4 }}>{feature}</div>
-        <div style={{ fontSize: 12, color: "#92400e" }}>{description}</div>
-        <div style={{ marginTop: 6, background: "#fde68a", borderRadius: 4, height: 4, overflow: "hidden" }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: "linear-gradient(90deg, #f59e0b, #10b981)", borderRadius: 4 }} />
-        </div>
-        <div style={{ fontSize: 11, color: "#a16207", marginTop: 3 }}>{progress}% complete{eta ? ` · ETA: ${eta}` : ""}</div>
-      </div>
-    </div>
-  )
-}
+import { DevBanner } from "../../components/DevBanner"
+import TriageColorBadge from "../../components/TriageColorBadge"
 
 export function HospitalDashboardPage() {
   const [hospitals, setHospitals] = useState<any[]>([])
@@ -36,72 +22,147 @@ export function HospitalDashboardPage() {
     { id: 2, incident: "TRK-20240312-003", triage_color: "YELLOW", eta_minutes: 14, gcs: 13, spo2: 94, bp: "110/70", ambulance: "KL-07-FF-2345" },
   ]
 
-  const triageConfig: Record<string, { bg: string; border: string; color: string }> = {
-    RED: { bg: "#fef2f2", border: "#fecaca", color: "#dc2626" },
-    YELLOW: { bg: "#fffbeb", border: "#fde68a", color: "#d97706" },
-    GREEN: { bg: "#f0fdf4", border: "#bbf7d0", color: "#16a34a" },
-  }
-
   return (
-    <div style={{ padding: 24, background: "#f0f4ff", minHeight: "100%" }}>
+    <div>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#0f2952" }}>Hospital Emergency Dashboard</h1>
-        <p style={{ color: "#6b87b0", fontSize: 13, margin: "4px 0 0" }}>Pre-arrival alerts and resource management</p>
+        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "var(--color-text-primary)" }}>
+          Hospital Emergency Dashboard
+        </h1>
+        <p style={{ color: "var(--color-text-secondary)", fontSize: 13, margin: "4px 0 0" }}>
+          Pre-arrival alerts and resource management
+        </p>
       </div>
-      <DevBanner feature="Live Pre-Arrival Alert System" description="Real-time patient triage data transmitted from ambulance to hospital before arrival. Enables trauma team pre-activation." progress={72} eta="Q2 2026" />
-      <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 20 }}>
-        <div>
-          <h3 style={{ fontSize: 13, color: "#6b87b0", margin: "0 0 10px", fontWeight: 600 }}>SELECT HOSPITAL</h3>
-          {loading ? <div style={{ color: "#6b87b0" }}>Loading...</div> : hospitals.map(h => (
-            <div key={h.id} onClick={() => setSelected(h)}
-              style={{ padding: "10px 14px", background: selected?.id === h.id ? "#1a3a6b" : "#ffffff", border: `1px solid ${selected?.id === h.id ? "#1a3a6b" : "#c8d8f0"}`, borderRadius: 8, marginBottom: 8, cursor: "pointer" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: selected?.id === h.id ? "#fff" : "#0f2952" }}>{h.name}</div>
-              <div style={{ fontSize: 11, color: selected?.id === h.id ? "#93c5fd" : "#6b87b0", marginTop: 2 }}>{h.district} · {h.trauma_level?.replace("_"," ")}</div>
-              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                <span style={{ fontSize: 11, color: selected?.id === h.id ? "#6ee7b7" : "#10b981", fontWeight: 600 }}>ICU: {h.resources?.icu_beds_available || 0}/{h.resources?.icu_beds_total || 0}</span>
-                <span style={{ fontSize: 11, color: selected?.id === h.id ? "#93c5fd" : (h.resources?.ot_available ? "#10b981" : "#ef4444"), fontWeight: 600 }}>OT: {h.resources?.ot_available ? "Ready" : "Busy"}</span>
-              </div>
-            </div>
-          ))}
+
+      <DevBanner 
+        feature="Live Pre-Arrival Alert System" 
+        description="Real-time patient triage data transmitted from ambulance to hospital before arrival. Enables trauma team pre-activation." 
+        progress={72} 
+        eta="Q2 2026" 
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24 }}>
+        
+        {/* Left Column: Hospital List */}
+        <div className="card" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 240px)" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--color-border)", background: "var(--color-bg-tertiary)" }}>
+            <h3 style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: 0, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase" }}>
+              SELECT HOSPITAL
+            </h3>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", padding: "12px" }}>
+            {loading ? (
+              <div style={{ color: "var(--color-text-muted)", padding: "20px", textAlign: "center" }}>Loading...</div>
+            ) : hospitals.map(h => {
+              const isActive = selected?.id === h.id
+              const hasICU = (h.resources?.icu_beds_available || 0) > 0
+              return (
+                <div 
+                  key={h.id} 
+                  onClick={() => setSelected(h)}
+                  style={{ 
+                    padding: "12px 16px",
+                    background: isActive ? "var(--color-bg-hover)" : "transparent",
+                    border: "1px solid",
+                    borderColor: isActive ? "var(--color-accent-blue)" : "transparent", 
+                    borderLeft: isActive ? "3px solid var(--color-accent-blue)" : "3px solid transparent",
+                    borderRadius: "var(--radius-md)", 
+                    marginBottom: 8, 
+                    cursor: "pointer",
+                    transition: "all var(--transition-fast)"
+                  }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 600, color: isActive ? "var(--color-accent-blue)" : "var(--color-text-primary)" }}>{h.name}</div>
+                  <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>{h.district} · {h.trauma_level?.replace(/_/g," ")}</div>
+                  
+                  <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+                    <span style={{ fontSize: 11, color: hasICU ? "var(--color-success)" : "var(--color-danger)", fontWeight: 600 }}>
+                      ICU: {h.resources?.icu_beds_available || 0}
+                    </span>
+                    <span style={{ fontSize: 11, color: h.resources?.ot_available ? "var(--color-success)" : "var(--color-danger)", fontWeight: 600 }}>
+                      OT: {h.resources?.ot_available ? "Ready" : "Busy"}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
+
+        {/* Right Column: Dashboard Details */}
         <div>
           {selected && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+              {/* KPIs */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
                 {[
-                  { label: "ICU Available", value: selected.resources?.icu_beds_available || 0, color: "#10b981" },
-                  { label: "Ventilators", value: selected.resources?.ventilators_available || 0, color: "#1a3a6b" },
-                  { label: "ED Occupancy", value: `${selected.resources?.ed_capacity_current || 0}/${selected.resources?.ed_capacity_total || 0}`, color: "#f59e0b" },
-                  { label: "Blood Bank", value: selected.resources?.blood_bank_available ? "Available" : "Critical", color: selected.resources?.blood_bank_available ? "#10b981" : "#ef4444" },
-                ].map(card => (
-                  <div key={card.label} style={{ background: "#ffffff", border: "1px solid #c8d8f0", borderRadius: 8, padding: "14px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-                    <div style={{ fontSize: 11, color: "#6b87b0", marginBottom: 4, fontWeight: 500 }}>{card.label}</div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: card.color }}>{card.value}</div>
+                  { label: "ICU Available", value: selected.resources?.icu_beds_available || 0, color: "var(--color-success)" },
+                  { label: "Ventilators", value: selected.resources?.ventilators_available || 0, color: "var(--color-accent-blue)" },
+                  { label: "ED Occupancy", value: `${selected.resources?.ed_capacity_current || 0}/${selected.resources?.ed_capacity_total || 0}`, color: "var(--color-warning)" },
+                  { label: "Blood Bank", value: selected.resources?.blood_bank_available ? "Available" : "Critical", color: selected.resources?.blood_bank_available ? "var(--color-success)" : "var(--color-danger)" },
+                ].map((card, i) => (
+                  <div key={i} className="card" style={{ padding: "16px 20px" }}>
+                    <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{card.label}</div>
+                    <div className="mono" style={{ fontSize: 26, fontWeight: 700, color: card.color }}>{card.value}</div>
+                    {/* Fake trend indicators for detail */}
+                    <div style={{ fontSize: 11, color: "var(--color-text-muted)", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                      <svg viewBox="0 0 20 20" fill="currentColor" width="12" height="12"><path fillRule="evenodd" d="M12 7a1 1 0 110-2h5v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 11.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L10 10.586 13.586 7H12z" clipRule="evenodd"/></svg>
+                      Last updated
+                    </div>
                   </div>
                 ))}
               </div>
-              <h3 style={{ fontSize: 13, color: "#6b87b0", margin: "0 0 12px", fontWeight: 600 }}>INCOMING PATIENTS — PRE-ARRIVAL ALERTS</h3>
+
+              {/* Incoming Patients */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <h3 style={{ fontSize: 14, color: "var(--color-text-primary)", margin: 0, fontWeight: 700 }}>
+                  INCOMING PATIENTS — PRE-ARRIVAL ALERTS
+                </h3>
+              </div>
+
               {mockIncoming.map(p => {
-                const tc = triageConfig[p.triage_color] || { bg: "#f1f5f9", border: "#e2e8f0", color: "#475569" }
+                const isCritical = p.eta_minutes < 10
+                
                 return (
-                  <div key={p.id} style={{ background: "#ffffff", border: `1px solid ${tc.border}`, borderRadius: 8, padding: 16, marginBottom: 12, display: "flex", gap: 16, alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: tc.bg, border: `2px solid ${tc.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: tc.color, fontWeight: 700, flexShrink: 0 }}>
-                      {p.triage_color}
-                    </div>
+                  <div key={p.id} className="card" style={{ padding: 20, marginBottom: 16, display: "flex", gap: 24, alignItems: "center", borderLeft: isCritical ? "3px solid var(--color-danger)" : "3px solid var(--color-border)", animation: isCritical ? "danger-glow 2s infinite" : "none" }}>
+                    {/* Triage Badge */}
+                    <TriageColorBadge color={p.triage_color} showIcon={false} className="mono" />
+
+                    {/* Patient Info */}
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0f2952" }}>{p.incident}</div>
-                      <div style={{ fontSize: 12, color: "#6b87b0", marginTop: 2 }}>Ambulance: {p.ambulance}</div>
-                      <div style={{ display: "flex", gap: 12, marginTop: 6, fontSize: 12, color: "#9ca3af" }}>
-                        <span>GCS: <strong style={{ color: "#0f2952" }}>{p.gcs}</strong></span>
-                        <span>SpO2: <strong style={{ color: "#0f2952" }}>{p.spo2}%</strong></span>
-                        <span>BP: <strong style={{ color: "#0f2952" }}>{p.bp}</strong></span>
+                      <div className="mono" style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text-primary)" }}>{p.incident}</div>
+                      <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginTop: 4 }}>
+                        Ambulance: <span className="mono">{p.ambulance}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
+                        <div style={{ background: "var(--color-bg-tertiary)", padding: "4px 8px", borderRadius: "var(--radius-sm)", fontSize: 12 }}>
+                          <span style={{ color: "var(--color-text-secondary)" }}>GCS: </span>
+                          <strong className="mono" style={{ color: "var(--color-text-primary)" }}>{p.gcs}</strong>
+                        </div>
+                        <div style={{ background: "var(--color-bg-tertiary)", padding: "4px 8px", borderRadius: "var(--radius-sm)", fontSize: 12 }}>
+                          <span style={{ color: "var(--color-text-secondary)" }}>SpO2: </span>
+                          <strong className="mono" style={{ color: "var(--color-text-primary)" }}>{p.spo2}%</strong>
+                        </div>
+                        <div style={{ background: "var(--color-bg-tertiary)", padding: "4px 8px", borderRadius: "var(--radius-sm)", fontSize: 12 }}>
+                          <span style={{ color: "var(--color-text-secondary)" }}>BP: </span>
+                          <strong className="mono" style={{ color: "var(--color-text-primary)" }}>{p.bp}</strong>
+                        </div>
                       </div>
                     </div>
-                    <div style={{ textAlign: "center", minWidth: 60 }}>
-                      <div style={{ fontSize: 24, fontWeight: 700, color: "#f59e0b" }}>{p.eta_minutes}</div>
-                      <div style={{ fontSize: 10, color: "#9ca3af" }}>min ETA</div>
+
+                    {/* ETA Block */}
+                    <div style={{ textAlign: "right", minWidth: 80, paddingRight: 16, borderRight: "1px solid var(--color-border)" }}>
+                      <div className="mono" style={{ fontSize: 32, fontWeight: 800, color: isCritical ? "var(--color-danger)" : "var(--color-warning)", lineHeight: 1 }}>
+                        {p.eta_minutes}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--color-text-muted)", fontWeight: 600, marginTop: 4 }}>
+                        MIN ETA
+                      </div>
                     </div>
-                    <button style={{ padding: "8px 14px", background: "#1a3a6b", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Acknowledge</button>
+
+                    {/* Action */}
+                    <button className="btn btn-primary">
+                      Acknowledge
+                    </button>
                   </div>
                 )
               })}

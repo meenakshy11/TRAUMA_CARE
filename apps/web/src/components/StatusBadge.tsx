@@ -18,55 +18,42 @@ interface StatusBadgeProps {
   pulse?: boolean;
 }
 
-const STATUS_VARIANTS: Record<string, { bg: string; color: string; dot: string }> = {
-  REPORTED:     { bg: 'rgba(239, 68, 68, 0.15)',  color: '#fca5a5', dot: '#ef4444' },     // Red
-  DISPATCHED:   { bg: 'rgba(59, 130, 246, 0.15)', color: '#93c5fd', dot: '#3b82f6' },     // Blue
-  ON_SCENE:     { bg: 'rgba(245, 158, 11, 0.15)', color: '#fcd34d', dot: '#f59e0b' },     // Orange
-  TRANSPORTING: { bg: 'rgba(139, 92, 246, 0.15)', color: '#c4b5fd', dot: '#8b5cf6' },     // Purple
-  AT_HOSPITAL:  { bg: 'rgba(6, 182, 212, 0.15)',  color: '#67e8f9', dot: '#06b6d4' },      // Cyan
-  RESOLVED:     { bg: 'rgba(34, 197, 94, 0.15)',  color: '#86efac', dot: '#22c55e' },      // Green
-  AVAILABLE:    { bg: 'rgba(34, 197, 94, 0.15)',  color: '#86efac', dot: '#22c55e' },      // Green
-  FALSE_ALARM:  { bg: 'rgba(107, 114, 128, 0.15)',color: '#d1d5db', dot: '#9ca3af' },    // Gray
-  MAINTENANCE:  { bg: 'rgba(107, 114, 128, 0.15)',color: '#d1d5db', dot: '#9ca3af' },
-  OFF_DUTY:     { bg: 'rgba(107, 114, 128, 0.15)',color: '#d1d5db', dot: '#9ca3af' },
+const STATUS_MAPPING: Record<string, { badgeClass: string; isPulse: boolean }> = {
+  REPORTED:     { badgeClass: 'badge-warning', isPulse: false },
+  DISPATCHED:   { badgeClass: 'badge-info', isPulse: false },
+  ON_SCENE:     { badgeClass: 'badge-cyan', isPulse: false },
+  TRANSPORTING: { badgeClass: 'badge-info', isPulse: false },
+  AT_HOSPITAL:  { badgeClass: 'badge-cyan', isPulse: false },
+  RESOLVED:     { badgeClass: 'badge-success', isPulse: false },
+  AVAILABLE:    { badgeClass: 'badge-success', isPulse: false },
+  FALSE_ALARM:  { badgeClass: 'badge-muted', isPulse: false },
+  MAINTENANCE:  { badgeClass: 'badge-warning', isPulse: false },
+  OFF_DUTY:     { badgeClass: 'badge-muted', isPulse: false },
+  CRITICAL:     { badgeClass: 'badge-critical', isPulse: true },
 };
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '', pulse = false }) => {
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '', pulse }) => {
   const normalized = status.toUpperCase().replace(/\s+/g, '_');
-  const variant = STATUS_VARIANTS[normalized] ?? STATUS_VARIANTS.FALSE_ALARM;
+  const mapping = STATUS_MAPPING[normalized] || { badgeClass: 'badge-muted', isPulse: false };
+  const showPulse = pulse !== undefined ? pulse : mapping.isPulse;
 
   return (
     <span
-      className={`status-badge ${className}`}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '3px 8px',
-        borderRadius: '9999px',
-        background: variant.bg,
-        border: `1px solid ${variant.bg.replace('0.15', '0.3')}`,
-        color: variant.color,
-        fontSize: '10px',
-        fontWeight: 700,
-        letterSpacing: '0.04em',
-        textTransform: 'uppercase',
-        flexShrink: 0,
-      }}
-      aria-label={`Status: ${status.replace('_', ' ')}`}
+      className={`badge ${mapping.badgeClass} ${className}`}
+      aria-label={`Status: ${status.replace(/_/g, ' ')}`}
     >
       <span
         style={{
           width: '6px',
           height: '6px',
           borderRadius: '50%',
-          backgroundColor: variant.dot,
-          boxShadow: `0 0 5px ${variant.dot}`,
-          animation: pulse ? 'live-pulse 2s ease-in-out infinite' : 'none',
+          backgroundColor: 'currentColor',
+          boxShadow: showPulse ? 'var(--shadow-elevated)' : 'none',
+          animation: showPulse ? 'pulse-ring 2s ease-in-out infinite' : 'none',
         }}
         aria-hidden="true"
       />
-      {status.replace('_', ' ')}
+      {status.replace(/_/g, ' ')}
     </span>
   );
 };

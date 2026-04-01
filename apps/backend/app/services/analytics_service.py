@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, Integer
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 
@@ -56,22 +56,27 @@ async def get_kpi_summary(db: AsyncSession, district: Optional[str] = None) -> d
 
 
 async def get_district_performance(db: AsyncSession) -> list:
-    result = await db.execute(
+    # Count all incidents per district
+    total_q = await db.execute(
         select(
             Incident.district,
             func.count(Incident.id).label("total"),
-            func.sum(func.cast(Incident.golden_hour_met, db.bind.dialect.name == 'postgresql' and 'integer' or 'integer')).label("golden_met"),
+            func.sum(
+                func.cast(Incident.golden_hour_met, Integer)
+            ).label("golden_met"),
         )
         .where(Incident.district.isnot(None))
         .group_by(Incident.district)
+        .order_by(func.count(Incident.id).desc())
     )
-    rows = result.all()
+    rows = total_q.all()
     return [
         {
             "district": r.district,
             "total_incidents": r.total,
-            "golden_hour_met": r.golden_met or 0,
-            "compliance_pct": round((r.golden_met or 0) / r.total * 100, 1) if r.total else 0,
+            "golden_hour_met": int(r.golden_met or 0),
+            "compliance_pct": round(int(r.golden_met or 0) / r.total * 100, 1) if r.total else 0.0,
         }
         for r in rows
+        if r.district  # skip any null districts
     ]

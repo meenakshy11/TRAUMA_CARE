@@ -1,39 +1,141 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useLocation } from "react-router-dom"
 import { useNotificationStore } from "../../store/notificationStore"
+import styles from "./TopBar.module.css"
 
-export function TopBar() {
+const PAGE_TITLES: Record<string, string> = {
+  "/command-center":    "Command Center",
+  "/incidents":         "Incident Registry",
+  "/hospitals":         "Hospitals",
+  "/hospital-dashboard": "Hospital Dashboard",
+  "/analytics":         "Analytics",
+  "/blackspots":        "Black Spot Management",
+  "/simulation":        "Simulation & Coverage",
+  "/admin":             "Administration",
+}
+
+function resolveTitle(pathname: string): string {
+  // Exact match first
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname]
+  // Dynamic segments
+  if (/^\/incidents\/[^/]+$/.test(pathname)) return "Incident Detail"
+  if (/^\/hospitals\/[^/]+$/.test(pathname))  return "Hospital Detail"
+  return "Dashboard"
+}
+
+function useClock() {
+  const [time, setTime] = useState(() =>
+    new Date().toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour12: false })
+  )
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTime(new Date().toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour12: false }))
+    }, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return time
+}
+
+const BellIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+  </svg>
+)
+
+const MenuIcon = () => (
+  <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+    <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
+  </svg>
+)
+
+export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
+  const location = useLocation()
   const unreadCount = useNotificationStore((s) => s.unreadCount)
   const notifications = useNotificationStore((s) => s.notifications)
   const markRead = useNotificationStore((s) => s.markRead)
   const [open, setOpen] = useState(false)
+  const [wsStatus] = useState<"live" | "reconnecting">("live")
+  const time = useClock()
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const pageTitle = resolveTitle(location.pathname)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
 
   return (
-    <div style={{ height: 52, background: "#1a3a6b", borderBottom: "1px solid #2d5086", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", flexShrink: 0, position: "relative" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontSize: 11, background: "rgba(16,185,129,0.2)", color: "#6ee7b7", padding: "3px 8px", borderRadius: 10 }}>● SYSTEM ACTIVE</span>
-        <span style={{ fontSize: 11, color: "#93c5fd" }}>{new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</span>
+    <div className={styles.topBar}>
+      {/* Left */}
+      <div className={styles.leftSection}>
+        <button className={styles.hamburger} onClick={onMenuClick} title="Toggle menu">
+          <MenuIcon />
+        </button>
+        <span className={styles.pageTitle}>{pageTitle}</span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setOpen(o => !o)}>
-          <span style={{ fontSize: 18 }}>🔔</span>
-          {unreadCount > 0 && (
-            <span style={{ position: "absolute", top: -4, right: -4, background: "#ef4444", color: "#fff", fontSize: 9, borderRadius: "50%", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {unreadCount}
-            </span>
+
+      {/* Right */}
+      <div className={styles.rightSection}>
+        {/* WS Status */}
+        <div className={`${styles.wsPill} ${wsStatus === "live" ? styles.wsPillLive : styles.wsPillReconnecting}`}>
+          <span className={`${styles.wsDot} ${wsStatus === "live" ? styles.wsDotLive : ""}`} />
+          {wsStatus === "live" ? "LIVE" : "RECONNECTING..."}
+        </div>
+
+        {/* Live Clock */}
+        <div className={styles.clock}>{time} IST</div>
+
+        {/* Notifications */}
+        <div className={styles.notifWrapper} ref={dropdownRef}>
+          <button
+            className={styles.notifBtn}
+            onClick={() => setOpen(o => !o)}
+            title="Notifications"
+            id="topbar-notifications"
+          >
+            <BellIcon />
+            {unreadCount > 0 && (
+              <span className={styles.notifBadge}>
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {open && (
+            <div className={styles.notifDropdown}>
+              <div className={styles.notifHeader}>
+                Notifications {unreadCount > 0 && `· ${unreadCount} unread`}
+              </div>
+              <div className={styles.notifList}>
+                {notifications.length === 0 ? (
+                  <div className={styles.notifEmpty}>No notifications</div>
+                ) : (
+                  notifications.slice(0, 12).map((n: any) => (
+                    <div
+                      key={n.id}
+                      className={`${styles.notifItem} ${!n.is_read ? styles.unread : ""}`}
+                      onClick={() => { markRead(n.id) }}
+                    >
+                      <div className={`${styles.notifMsg} ${n.severity === "HIGH" ? styles.high : n.severity === "MEDIUM" ? styles.medium : ""}`}>
+                        {n.message}
+                      </div>
+                      <div className={styles.notifTime}>
+                        {new Date(n.created_at).toLocaleTimeString("en-IN", { hour12: false })}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           )}
         </div>
-        {open && (
-          <div style={{ position: "absolute", top: 52, right: 20, width: 360, background: "#ffffff", border: "1px solid #c8d8f0", borderRadius: 8, zIndex: 1000, maxHeight: 320, overflowY: "auto", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
-            <div style={{ padding: "10px 14px", borderBottom: "1px solid #e8eef8", fontSize: 12, fontWeight: 600, color: "#1a3a6b" }}>Notifications</div>
-            {notifications.slice(0, 10).map((n: any) => (
-              <div key={n.id} onClick={() => markRead(n.id)} style={{ padding: "10px 14px", borderBottom: "1px solid #e8eef8", background: n.is_read ? "#ffffff" : "#f0f4ff", cursor: "pointer" }}>
-                <div style={{ fontSize: 12, color: n.severity === "HIGH" ? "#ef4444" : "#f59e0b" }}>{n.message}</div>
-                <div style={{ fontSize: 11, color: "#6b87b0", marginTop: 2 }}>{new Date(n.created_at).toLocaleTimeString()}</div>
-              </div>
-            ))}
-            {notifications.length === 0 && <div style={{ padding: 16, textAlign: "center", color: "#6b87b0", fontSize: 13 }}>No notifications</div>}
-          </div>
-        )}
       </div>
     </div>
   )

@@ -1,15 +1,21 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from pydantic import BaseModel
 from typing import Optional
 from app.db.session import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
+from app.models.hospital import Hospital, HospitalResource
 from app.services.hospital_service import (
-    list_hospitals, get_hospital, update_resources, reserve_trauma_slot, recommend_hospital
+    get_hospital, update_resources, reserve_trauma_slot, recommend_hospital
 )
 from app.services.notification_service import manager
 import uuid
+
+# Public read-only hospital endpoints do not require auth.
+# Write endpoints (PUT/POST) still enforce get_current_user.
 
 router = APIRouter(prefix="/hospitals", tags=["hospitals"])
 
@@ -69,12 +75,46 @@ def serialize_hospital(h) -> dict:
 
 @router.get("")
 async def list_all(
-    district: Optional[str] = Query(None),
-    trauma_level: Optional[str] = Query(None),
+    # Location filters
+    district: Optional[str] = Query(None, description="Filter by district name (case-insensitive)"),
+    # Capability filters
+    trauma_level: Optional[str] = Query(None, description="LEVEL_1 | LEVEL_2 | LEVEL_3"),
+    is_government: Optional[bool] = Query(None, description="true = govt only, false = private only"),
+    blood_bank: Optional[bool] = Query(None, description="true = has blood bank, false = no blood bank"),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    # No auth required — hospital listings are public/non-sensitive read-only data
 ):
-    hospitals = await list_hospitals(db, district=district, trauma_level=trauma_level)
+    """
+    List hospitals with optional filters (public endpoint — no auth required).
+
+    All filters are combinable:
+      GET /hospitals?district=Ernakulam&blood_bank=true&is_government=false
+    """
+    stmt = (
+        select(Hospital)
+        .options(selectinload(Hospital.resources))
+        .where(Hospital.is_active == True)
+    )
+
+    if district:
+        stmt = stmt.where(Hospital.district.ilike(district))
+
+    if trauma_level:
+        from app.core.constants import TraumaLevel
+        try:
+            tl = TraumaLevel(trauma_level)
+            stmt = stmt.where(Hospital.trauma_level == tl)
+        except ValueError:
+            pass  # ignore invalid enum values — return unfiltered by level
+
+    if is_government is not None:
+        stmt = stmt.where(Hospital.is_government == is_government)
+
+    if blood_bank is not None:
+        stmt = stmt.where(HospitalResource.blood_bank_available == blood_bank)
+
+    result = await db.execute(stmt)
+    hospitals = result.scalars().unique().all()
     return [serialize_hospital(h) for h in hospitals]
 
 
@@ -84,7 +124,7 @@ async def recommend(
     lon: float = Query(...),
     triage_color: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    # Public read endpoint — no auth required
 ):
     hospital = await recommend_hospital(db, lat, lon, triage_color)
     if not hospital:
@@ -96,7 +136,7 @@ async def recommend(
 async def get_one(
     hospital_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    # Public read endpoint — no auth required
 ):
     hospital = await get_hospital(db, hospital_id)
     if not hospital:
@@ -144,7 +184,6 @@ async def create_hospital(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    from app.models.hospital import Hospital, HospitalResource
     from app.core.constants import TraumaLevel
     h = Hospital(
         name=body.name,

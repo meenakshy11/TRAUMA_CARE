@@ -1,29 +1,59 @@
 import { useIncidentStore } from "../../../store/incidentStore"
-
-const STATUS_COLOR: Record<string, string> = {
-  REPORTED: "#f59e0b", DISPATCH_PENDING: "#f97316", DISPATCHED: "#3b82f6",
-  EN_ROUTE: "#8b5cf6", ON_SCENE: "#06b6d4", TRANSPORTING: "#10b981",
-  HOSPITAL_ARRIVED: "#059669", CLOSED: "#9ca3af",
-}
+import StatusBadge from "../../../components/StatusBadge"
 
 export function IncidentPanel() {
   const incidents = useIncidentStore((s) => s.incidents)
-  const list = Object.values(incidents).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const list = Object.values(incidents).sort((a: any, b: any) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
+
+  const handleDispatch = (id: string) => {
+    alert("Open dispatch modal for: " + id) // stub
+  }
+
+  if (list.length === 0) {
+    return <div style={{ color: "var(--color-text-muted)", fontSize: "13px", textAlign: "center", padding: "32px 0" }}>No active incidents</div>
+  }
 
   return (
-    <div>
-      {list.length === 0 && <div style={{ padding: 20, textAlign: "center", color: "#6b87b0", fontSize: 13 }}>No active incidents</div>}
-      {list.map((inc: any) => (
-        <div key={inc.id} style={{ padding: "10px 14px", borderBottom: "1px solid #e8eef8" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div style={{ fontSize: 12, color: "#1a3a6b", fontWeight: 600 }}>{inc.incident_number}</div>
-            <span style={{ fontSize: 10, background: `${STATUS_COLOR[inc.status] || "#9ca3af"}22`, color: STATUS_COLOR[inc.status] || "#9ca3af", padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>{inc.status?.replace("_"," ")}</span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {list.map((inc: any) => {
+        const isCritical = inc.severity === "CRITICAL"
+        return (
+          <div key={inc.id} className="card" style={{ padding: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)", marginBottom: 4 }}>
+                  {inc.incident_number}
+                </div>
+                <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>
+                  {inc.accident_type?.replace(/_/g, " ")} · {inc.patient_count} Patient{inc.patient_count > 1 ? "s" : ""}
+                </div>
+              </div>
+              <StatusBadge status={inc.status} />
+            </div>
+
+            <div style={{ display: "flex", gap: "8px", marginTop: "12px", alignItems: "center" }}>
+              <span className={`badge ${isCritical ? 'badge-critical' : 'badge-warning'}`}>
+                {inc.severity}
+              </span>
+              <span className="badge badge-muted">
+                {inc.district || "Unknown Dist"}
+              </span>
+            </div>
+
+            {inc.status === "REPORTED" && (
+              <button 
+                onClick={() => handleDispatch(inc.id)}
+                className="btn btn-primary btn-sm btn-full"
+                style={{ marginTop: 14 }}
+              >
+                Dispatch Ambulance
+              </button>
+            )}
           </div>
-          <div style={{ fontSize: 11, color: "#2d5086", marginTop: 3 }}>{inc.accident_type?.replace("_"," ")} · {inc.severity}</div>
-          <div style={{ fontSize: 11, color: "#6b87b0", marginTop: 2 }}>{inc.district || `${inc.latitude?.toFixed(3)}, ${inc.longitude?.toFixed(3)}`}</div>
-          <div style={{ fontSize: 11, color: "#6b87b0", marginTop: 2 }}>👤 {inc.patient_count} patient{inc.patient_count !== 1 ? "s" : ""}</div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

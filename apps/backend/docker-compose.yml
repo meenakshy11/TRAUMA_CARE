@@ -34,8 +34,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://trauma:trauma@db:5432/trauma_db
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://trauma:trauma@backend-db-1:5432/trauma_db
+      REDIS_URL: redis://backend-redis-1:6379/0
       SECRET_KEY: trauma-kerala-super-secret-key-change-in-production-256bit
       DEBUG: "true"
       DEMO_MODE: "true"

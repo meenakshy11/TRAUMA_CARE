@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Integrated Trauma Care Platform</title>
+    <meta name="description" content="Kerala Integrated Trauma Care Platform — Real-time emergency response coordination across ambulances, hospitals, and command centers." />
+    <title>Kerala Trauma Care Platform — Command Center</title>
+    <script>
+      // Prevent flash of wrong theme on load
+      ;(function() {
+        try {
+          var stored = localStorage.getItem('trauma-platform-theme')
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.setAttribute('data-theme', stored)
+          } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-theme', 'light')
+          }
+        } catch(e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
