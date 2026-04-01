@@ -14,7 +14,15 @@ export function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    const DEMO = import.meta.env.VITE_DEMO_MODE === "true"
     try {
+      if (DEMO) {
+        // Demo mode: skip real API call, just set a demo user session
+        login({ full_name: "Demo User", role: "DISPATCHER", email }, "demo-token")
+        toast.success("Welcome (Demo Mode)")
+        navigate("/command-center")
+        return
+      }
       const res = await authApi.login(email, password)
       login(res.data.user, res.data.access_token)
       toast.success(`Welcome, ${res.data.user.full_name}`)

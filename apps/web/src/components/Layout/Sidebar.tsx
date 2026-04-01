@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../store/authStore"
 
 const links = [
@@ -15,6 +15,13 @@ const links = [
 export function Sidebar() {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login", { replace: true })
+  }
+
   return (
     <div style={{ width: 220, background: "#1a3a6b", borderRight: "1px solid #2d5086", display: "flex", flexDirection: "column", flexShrink: 0 }}>
       <div style={{ padding: "16px 14px", borderBottom: "1px solid #2d5086" }}>
@@ -46,7 +53,7 @@ export function Sidebar() {
       <div style={{ padding: "12px 14px", borderTop: "1px solid #2d5086" }}>
         <div style={{ fontSize: 12, color: "#93c5fd", marginBottom: 4 }}>{user?.full_name || "Demo User"}</div>
         <div style={{ fontSize: 11, background: "rgba(125,211,252,0.2)", color: "#7dd3fc", padding: "2px 8px", borderRadius: 10, display: "inline-block", marginBottom: 8 }}>{user?.role || "DISPATCHER"}</div>
-        <div><button onClick={logout} style={{ fontSize: 12, color: "#fca5a5", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Sign out</button></div>
+        <div><button onClick={handleLogout} style={{ fontSize: 12, color: "#fca5a5", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Sign out</button></div>
       </div>
     </div>
   )
