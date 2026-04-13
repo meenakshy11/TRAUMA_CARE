@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
+import { useDistrictStore } from "../../store/districtStore"
 import { useNavigate } from "react-router-dom"
 import { incidentsApi } from "../../api/index"
 import StatusBadge from "../../components/StatusBadge"
@@ -6,17 +7,18 @@ import styles from "./IncidentListPage.module.css"
 
 export function IncidentListPage() {
   const navigate = useNavigate()
+  const { selectedDistrict } = useDistrictStore()
   const [incidents, setIncidents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("ALL")
   const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
-    incidentsApi.getAll().then(r => { 
+    incidentsApi.getAll({ district: selectedDistrict || undefined }).then(r => { 
       setIncidents(Array.isArray(r.data) ? r.data : [])
       setLoading(false) 
     }).catch(() => setLoading(false))
-  }, [])
+  }, [selectedDistrict])
 
   const filtered = incidents.filter(i => {
     if (filter !== "ALL" && i.status !== filter) return false
@@ -41,7 +43,7 @@ export function IncidentListPage() {
       <div className={styles.filters}>
         <div className={styles.titleBox}>
           <h1>Incident Registry</h1>
-          <p>All trauma incidents — centralized record</p>
+          <p>All trauma incidents â€” centralized record</p>
         </div>
         <div className={styles.toggleGroup}>
           {["ALL","REPORTED","DISPATCHED","ON_SCENE","CLOSED"].map(s => (
@@ -77,7 +79,7 @@ export function IncidentListPage() {
           </div>
         ) : sorted.length === 0 ? (
           <div className={styles.emptyState}>
-            <div className={styles.emptyIcon}>📭</div>
+            <div className={styles.emptyIcon}>ðŸ“­</div>
             <div className={styles.emptyText}>No incidents found</div>
             <div className={styles.emptySub}>Try adjusting your search or filters.</div>
           </div>
@@ -103,17 +105,17 @@ export function IncidentListPage() {
                     style={{ borderLeft: inc.severity === "CRITICAL" ? "3px solid var(--color-danger)" : "3px solid transparent", cursor: "pointer" }}
                   >
                     <td className="mono" style={{ color: "var(--color-text-primary)", fontWeight: 600 }}>{inc.incident_number}</td>
-                    <td>{inc.accident_type?.replace(/_/g," ") || "—"}</td>
+                    <td>{inc.accident_type?.replace(/_/g," ") || "â€”"}</td>
                     <td>
                       <span className={`badge ${inc.severity === "CRITICAL" ? "badge-critical" : inc.severity === "SEVERE" ? "badge-warning" : "badge-info"}`}>
                         {inc.severity}
                       </span>
                     </td>
-                    <td style={{ color: "var(--color-text-secondary)" }}>{inc.district || "—"}</td>
+                    <td style={{ color: "var(--color-text-secondary)" }}>{inc.district || "â€”"}</td>
                     <td className="mono" style={{ textAlign: "center" }}>{inc.patient_count}</td>
                     <td><StatusBadge status={inc.status} /></td>
                     <td className="mono" style={{ color: "var(--color-text-muted)", fontSize: 12 }}>
-                      {inc.created_at ? new Date(inc.created_at).toLocaleTimeString("en-IN", { hour12: false }) : "—"}
+                      {inc.created_at ? new Date(inc.created_at).toLocaleTimeString("en-IN", { hour12: false }) : "â€”"}
                     </td>
                   </tr>
                 ))}
@@ -125,3 +127,5 @@ export function IncidentListPage() {
     </div>
   )
 }
+
+

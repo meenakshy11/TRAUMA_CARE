@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react"
+import { useDistrictStore } from "../../store/districtStore"
 import { blackspotsApi } from "../../api/index"
 import toast from "react-hot-toast"
 
 export function BlackSpotPage() {
+  const { selectedDistrict } = useDistrictStore()
   const [spots, setSpots] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("ALL")
 
   useEffect(() => { 
-    blackspotsApi.getAll().then(r => { 
+    blackspotsApi.getAll({ district: selectedDistrict || undefined }).then(r => { 
       setSpots(Array.isArray(r.data) ? r.data : [])
       setLoading(false) 
     }).catch(() => setLoading(false)) 
-  }, [])
+  }, [selectedDistrict])
 
   const filtered = filter === "ALL" ? spots : spots.filter(s => s.severity === filter)
   const stats = { 

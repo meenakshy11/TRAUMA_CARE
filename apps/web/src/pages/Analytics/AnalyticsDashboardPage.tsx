@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react"
+﻿import { useEffect, useState } from "react"
 import { analyticsApi } from "../../api/index"
+import { useDistrictStore } from "../../store/districtStore"
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, LineChart, Line,
@@ -7,7 +8,7 @@ import {
 } from "recharts"
 import { RoadSafetyPanel } from "./components/RoadSafetyPanel"
 
-// ─── Chart palette ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Chart palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CHART_COLORS = {
   grid:   "var(--color-border)",
   text:   "var(--color-text-muted)",
@@ -16,7 +17,7 @@ const CHART_COLORS = {
   orange: "#f59e0b",
 }
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Custom Tooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
@@ -41,7 +42,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-// ─── Section Divider ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Section Divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const SectionDivider = ({ title, sub, badge }: { title: string; sub: string; badge?: string }) => (
   <div style={{
     display: "flex",
@@ -83,18 +84,20 @@ const SectionDivider = ({ title, sub, badge }: { title: string; sub: string; bad
   </div>
 )
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export function AnalyticsDashboardPage() {
+  const { selectedDistrict } = useDistrictStore()
   const [kpi, setKpi]           = useState<any>(null)
   const [districts, setDistricts] = useState<any[]>([])
   const [activeSection, setActiveSection] = useState<"performance" | "road-safety">("performance")
 
   useEffect(() => {
-    analyticsApi.getKPI().then(r => setKpi(r.data))
-    analyticsApi.getDistrictPerformance().then(r =>
-      setDistricts(Array.isArray(r.data) ? r.data : [])
-    )
-  }, [])
+    analyticsApi.getKPI(selectedDistrict || undefined).then(r => setKpi(r.data))
+    analyticsApi.getDistrictPerformance().then(r => {
+      const data = Array.isArray(r.data) ? r.data : []
+      setDistricts(selectedDistrict ? data.filter((d: any) => d.district === selectedDistrict) : data)
+    })
+  }, [selectedDistrict])
 
   const trendData = [
     { month: "Oct", incidents: 156, golden_met: 118 },
@@ -119,14 +122,14 @@ export function AnalyticsDashboardPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
 
-      {/* ── Page Header ──────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--color-text-primary)", letterSpacing: "-0.03em" }}>
             Analytics &amp; Performance
           </h1>
           <p style={{ color: "var(--color-text-secondary)", fontSize: 13, margin: "4px 0 0" }}>
-            Golden Hour compliance · Response metrics · Road Safety Intelligence — Kerala
+            Golden Hour compliance Â· Response metrics Â· Road Safety Intelligence â€” Kerala
           </p>
         </div>
 
@@ -138,8 +141,8 @@ export function AnalyticsDashboardPage() {
           borderRadius: "var(--radius-sm)",
         }}>
           {([
-            { id: "performance",  label: "📊 Performance"     },
-            { id: "road-safety",  label: "🚗 Road Safety"     },
+            { id: "performance",  label: "ðŸ“Š Performance"     },
+            { id: "road-safety",  label: "ðŸš— Road Safety"     },
           ] as const).map(s => (
             <button
               key={s.id}
@@ -163,9 +166,9 @@ export function AnalyticsDashboardPage() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          SECTION A — Golden Hour & Performance
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION A â€” Golden Hour & Performance
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {activeSection === "performance" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
 
@@ -246,7 +249,7 @@ export function AnalyticsDashboardPage() {
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text-primary)" }}>
-                District Performance Matrix — All 14 Districts
+                District Performance Matrix â€” All 14 Districts
               </div>
               <span className="badge badge-muted">Live</span>
             </div>
@@ -293,26 +296,26 @@ export function AnalyticsDashboardPage() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          SECTION B — Road Safety Analytics Panel
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+          SECTION B â€” Road Safety Analytics Panel
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {activeSection === "road-safety" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
           {/* Section header banner */}
           <SectionDivider
             title="Road Safety Analytics Panel"
-            sub="Accident hotspots · Time patterns · Severity distribution across Kerala road network"
-            badge="⚠️ HIGH RISK ZONES ACTIVE"
+            sub="Accident hotspots Â· Time patterns Â· Severity distribution across Kerala road network"
+            badge="âš ï¸ HIGH RISK ZONES ACTIVE"
           />
 
           {/* Stat strip */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
             {[
-              { label: "Total Accidents",  value: "242",  color: "#ef4444", sub: "Last 30 days",    icon: "💥" },
-              { label: "Fatalities",       value: "87",   color: "#f97316", sub: "Road accidents",  icon: "💀" },
-              { label: "Black Spots",      value: "10",   color: "#f59e0b", sub: "Tracked zones",   icon: "📍" },
-              { label: "Peak Risk Hour",   value: "02–04 AM", color: "#6366f1", sub: "Night window", icon: "🌙" },
+              { label: "Total Accidents",  value: "242",  color: "#ef4444", sub: "Last 30 days",    icon: "ðŸ’¥" },
+              { label: "Fatalities",       value: "87",   color: "#f97316", sub: "Road accidents",  icon: "ðŸ’€" },
+              { label: "Black Spots",      value: "10",   color: "#f59e0b", sub: "Tracked zones",   icon: "ðŸ“" },
+              { label: "Peak Risk Hour",   value: "02â€“04 AM", color: "#6366f1", sub: "Night window", icon: "ðŸŒ™" },
             ].map(c => (
               <div key={c.label} className="card" style={{
                 padding: "14px 18px",
@@ -339,3 +342,5 @@ export function AnalyticsDashboardPage() {
     </div>
   )
 }
+
+

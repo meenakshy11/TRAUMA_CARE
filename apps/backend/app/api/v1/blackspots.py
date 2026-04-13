@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+﻿from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from typing import Optional
@@ -47,6 +47,8 @@ async def list_all(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if current_user.role.value == "GOVERNMENT" and getattr(current_user, "district", None) and not district:
+        district = current_user.district
     spots = await list_blackspots(db, district=district)
     return [serialize_bs(s) for s in spots]
 
@@ -69,3 +71,5 @@ async def create(
     bs = await create_blackspot(db, **body.model_dump())
     await db.commit()
     return serialize_bs(bs)
+
+

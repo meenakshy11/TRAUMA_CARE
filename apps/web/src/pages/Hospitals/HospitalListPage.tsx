@@ -1,19 +1,21 @@
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useDistrictStore } from "../../store/districtStore"
 import { hospitalsApi } from "../../api/index"
 
 export function HospitalListPage() {
+  const { selectedDistrict } = useDistrictStore()
   const navigate = useNavigate()
   const [hospitals, setHospitals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("ALL")
 
   useEffect(() => {
-    hospitalsApi.getAll().then(r => {
+    hospitalsApi.getAll({ district: selectedDistrict || undefined }).then(r => {
       setHospitals(Array.isArray(r.data) ? r.data : [])
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [])
+  }, [selectedDistrict])
 
   const filtered = filter === "ALL"
     ? hospitals

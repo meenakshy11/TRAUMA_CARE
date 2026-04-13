@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+﻿from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from typing import Optional, List
@@ -102,6 +102,8 @@ async def list_all(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if current_user.role.value == "GOVERNMENT" and getattr(current_user, "district", None) and not district:
+        district = current_user.district
     incidents = await list_incidents(db, status=status, district=district, page=page, limit=limit)
     return [serialize_incident(i) for i in incidents]
 
@@ -137,3 +139,5 @@ async def update_status(
         str(incident.id), str(incident.status), incident.incident_number
     )
     return serialize_incident(incident)
+
+
