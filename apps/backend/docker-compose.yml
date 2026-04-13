@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U trauma"]
+      test: ["CMD-SHELL", "pg_isready -U trauma -d trauma_db"]
       interval: 5s
       timeout: 5s
       retries: 10
