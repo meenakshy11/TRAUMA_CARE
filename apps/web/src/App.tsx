@@ -12,6 +12,7 @@ import { AnalyticsDashboardPage } from "./pages/Analytics/AnalyticsDashboardPage
 import { BlackSpotPage } from "./pages/BlackSpots/BlackSpotPage"
 import { SimulationPage } from "./pages/Simulation/SimulationPage"
 import { HospitalDashboardPage } from "./pages/HospitalDashboard/HospitalDashboardPage"
+import { HospitalStaffPortal } from "./pages/HospitalStaffPortal/HospitalStaffPortal"
 import { AdminPage } from "./pages/Admin/AdminPage"
 import { PublicReportPage } from "./pages/PublicReport/PublicReportPage"
 import { NotFoundPage } from "./pages/NotFound/NotFoundPage"
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="hospitals" element={<HospitalListPage />} />
             <Route path="hospitals/:id" element={<HospitalDetailPage />} />
             <Route path="hospital-dashboard" element={<HospitalDashboardPage />} />
+            <Route path="hospital-staff" element={<HospitalStaffPortal />} />
 
             {/* Other pages */}
             <Route path="analytics" element={<AnalyticsDashboardPage />} />

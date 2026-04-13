@@ -12,9 +12,11 @@ interface AmbulanceStore {
   setAmbulances: (list: any[]) => void
   /** WebSocket location push */
   updatePosition: (id: string, lat: number, lon: number, status: string) => void
+  /** Look up the full ambulance record for a given position id */
+  getAmbulance: (id: string) => any | undefined
 }
 
-export const useAmbulanceStore = create<AmbulanceStore>((set) => ({
+export const useAmbulanceStore = create<AmbulanceStore>((set, get) => ({
   ambulances: {},
   positions: {},
 
@@ -44,4 +46,7 @@ export const useAmbulanceStore = create<AmbulanceStore>((set) => ({
         [id]: { lat, lon, status, updatedAt: new Date().toISOString() },
       },
     })),
+
+  getAmbulance: (id) => get().ambulances[id],
 }))
+

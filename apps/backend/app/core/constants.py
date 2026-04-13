@@ -46,6 +46,7 @@ class AccidentType(str, enum.Enum):
 class AmbulanceStatus(str, enum.Enum):
     AVAILABLE = "AVAILABLE"
     DISPATCHED = "DISPATCHED"
+    ON_TRIP = "ON_TRIP"
     ON_SCENE = "ON_SCENE"
     TRANSPORTING = "TRANSPORTING"
     AT_HOSPITAL = "AT_HOSPITAL"

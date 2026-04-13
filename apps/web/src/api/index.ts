@@ -155,6 +155,7 @@ export const analyticsApi = {
 }
 
 export const simulationApi = {
+  /** Legacy blackspot coverage gap analysis */
   run: async (data: any) => {
     if (DEMO) return { data: {
       total_blackspots: 515, covered: 423, coverage_pct: 82.1,
@@ -166,6 +167,107 @@ export const simulationApi = {
       recommendation: "Add 3 ambulance bases to cover 92 underserved black spots in Kasaragod, Wayanad, and Idukki districts"
     } }
     return apiClient.post("/simulation/run", data)
+  },
+
+  /** Map-click accident simulation → nearest ambulance + hospital + response times */
+  accident: async (lat: number, lng: number, severity: string = "SEVERE") => {
+    if (DEMO) {
+      const haversine = (la1: number, lo1: number, la2: number, lo2: number) => {
+        const R = 6371, dLat = (la2-la1)*Math.PI/180, dLon = (lo2-lo1)*Math.PI/180
+        const a = Math.sin(dLat/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)**2
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+      }
+
+      // ✔ Use DEMO_AMBULANCES directly — same registration_no as the map markers
+      const availableAmbs = DEMO_AMBULANCES
+        .filter(a => a.status === "AVAILABLE" && a.current_lat && a.current_lon)
+        .map(a => ({ ...a, dist: haversine(lat, lng, a.current_lat!, a.current_lon!) }))
+        .sort((a, b) => a.dist - b.dist)
+
+      // Fallback: if no AVAILABLE unit, take any unit with GPS
+      const allAmbs = DEMO_AMBULANCES
+        .filter(a => a.current_lat && a.current_lon)
+        .map(a => ({ ...a, dist: haversine(lat, lng, a.current_lat!, a.current_lon!) }))
+        .sort((a, b) => a.dist - b.dist)
+
+      const amb = availableAmbs[0] ?? allAmbs[0]
+      if (!amb) return { data: { error: "No ambulances available" } }
+
+      // ✔ Use DEMO_HOSPITALS directly — same name as CoverageResultOverlay shows
+      const hosp = DEMO_HOSPITALS
+        .map(h => ({ ...h, dist: haversine(lat, lng, h.latitude, h.longitude) }))
+        .sort((a, b) => a.dist - b.dist)[0]
+
+      const sceneTime    = severity === "CRITICAL" ? 10 : severity === "SEVERE" ? 7 : 5
+      const dispatchTime = Math.round(amb.dist / 40 * 60 * 10) / 10
+      const transportTime= Math.round(hosp.dist / 40 * 60 * 10) / 10
+      const total        = Math.round((dispatchTime + sceneTime + transportTime) * 10) / 10
+
+      return { data: {
+        nearest_ambulance:   amb.registration_no,   // ✔ matches SimulationMap highlight check
+        ambulance_id:        amb.id,
+        ambulance_type:      amb.ambulance_type,
+        ambulance_distance:  Math.round(amb.dist * 100) / 100,
+        ambulance_lat:       amb.current_lat,
+        ambulance_lng:       amb.current_lon,
+        hospital_selected:   hosp.name,              // ✔ same name shown in result panel
+        hospital_id:         hosp.id,
+        hospital_district:   hosp.district,
+        hospital_distance:   Math.round(hosp.dist * 100) / 100,
+        hospital_lat:        hosp.latitude,
+        hospital_lng:        hosp.longitude,
+        hospital_trauma_level: hosp.trauma_level,
+        dispatch_time:       dispatchTime,
+        scene_time:          sceneTime,
+        transport_time:      transportTime,
+        total_response_time: total,
+        golden_hour_status:  total <= 60 ? "Within Golden Hour" : "Exceeds Golden Hour",
+        golden_hour_met:     total <= 60,
+        accident_lat:        lat,
+        accident_lng:        lng,
+        severity,
+      }}
+    }
+    return apiClient.post("/simulation/accident", { lat, lng, severity })
+  },
+
+  /** Coverage heatmap — ambulance reachability zones */
+  coverage: async (district?: string) => {
+    if (DEMO) {
+      // ✔ Use DEMO_AMBULANCES so ambulance_id and registration_no match the map markers
+      const zones = DEMO_AMBULANCES
+        .filter(a => !district || a.district === district)
+        .map(a => ({
+          ambulance_id:     a.id,
+          registration_no:  a.registration_no,
+          lat:              a.current_lat,
+          lng:              a.current_lon,
+          district:         a.district,
+          status:           a.status,
+          radius_15min_km:  10,
+          radius_30min_km:  20,
+          radius_45min_km:  30,
+        }))
+      return { data: { coverage_zones: zones, total_ambulances: zones.length, district_filter: district ?? null } }
+    }
+    return apiClient.get("/simulation/coverage", { params: { district } })
+  },
+
+  /** Infrastructure optimizer — test a hypothetical new ambulance base */
+  infrastructure: async (data: { new_base_lat: number; new_base_lon: number; district?: string }) => {
+    if (DEMO) return { data: {
+      new_base_lat: data.new_base_lat,
+      new_base_lon: data.new_base_lon,
+      total_blackspots: 515,
+      avg_dispatch_time_before: 42.8,
+      avg_dispatch_time_after:  31.4,
+      time_reduction_minutes:   11.4,
+      blackspots_improved:      187,
+      coverage_before_pct:      61.2,
+      coverage_after_pct:       78.5,
+      coverage_gain_pct:        17.3,
+    }}
+    return apiClient.post("/simulation/infrastructure", data)
   },
 }
 

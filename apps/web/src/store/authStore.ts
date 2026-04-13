@@ -6,6 +6,7 @@ interface User {
   full_name: string
   role: string
   hospital_id?: string | null
+  hospital_name?: string | null
   ambulance_id?: string | null
 }
 

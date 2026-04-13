@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+
 import { hospitalsApi } from "../../api/index"
 import { DevBanner } from "../../components/DevBanner"
 import TriageColorBadge from "../../components/TriageColorBadge"
@@ -7,6 +8,12 @@ export function HospitalDashboardPage() {
   const [hospitals, setHospitals] = useState<any[]>([])
   const [selected, setSelected] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [acknowledged, setAcknowledged] = useState<Record<number, string>>({})
+
+  const handleAcknowledge = (id: number) => {
+    const now = new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+    setAcknowledged((prev) => ({ ...prev, [id]: now }))
+  }
 
   useEffect(() => {
     hospitalsApi.getAll().then(r => {
@@ -160,9 +167,46 @@ export function HospitalDashboardPage() {
                     </div>
 
                     {/* Action */}
-                    <button className="btn btn-primary">
-                      Acknowledge
-                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 130 }}>
+                      <button
+                        id={`btn-ack-${p.id}`}
+                        onClick={() => !acknowledged[p.id] && handleAcknowledge(p.id)}
+                        style={{
+                          padding: "10px 18px",
+                          borderRadius: "var(--radius-md)",
+                          fontSize: 13,
+                          fontWeight: 700,
+                          cursor: acknowledged[p.id] ? "default" : "pointer",
+                          border: "1px solid",
+                          transition: "all 0.25s",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          ...(acknowledged[p.id] ? {
+                            background: "rgba(16,185,129,0.12)",
+                            borderColor: "rgba(16,185,129,0.4)",
+                            color: "#10b981",
+                          } : {
+                            background: "linear-gradient(135deg, #1d4ed8, #2563eb)",
+                            borderColor: "transparent",
+                            color: "#fff",
+                            boxShadow: "0 2px 10px rgba(37,99,235,0.35)",
+                          })
+                        }}
+                      >
+                        {acknowledged[p.id] ? (
+                          <>
+                            <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                            Acknowledged
+                          </>
+                        ) : "Acknowledge"}
+                      </button>
+                      {acknowledged[p.id] && (
+                        <div style={{ fontSize: 10, color: "var(--color-text-muted)", textAlign: "center" }}>
+                          at {acknowledged[p.id]}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )
               })}

@@ -7,11 +7,19 @@ import toast from "react-hot-toast"
 import styles from "./LoginPage.module.css"
 
 const DEMO_ROLES = [
-  { label: "Dispatcher", email: "dispatcher@trauma.demo", password: "Demo@1234", role: "DISPATCHER" },
-  { label: "Admin", email: "admin@trauma.demo", password: "Admin@1234", role: "ADMIN" },
-  { label: "Hospital Staff", email: "hospital@trauma.demo", password: "Hosp@1234", role: "HOSPITAL_STAFF" },
-  { label: "Government", email: "gov@trauma.demo", password: "Gov@1234", role: "GOVERNMENT" },
+  { label: "Dispatcher", email: "dispatcher@trauma.demo", password: "Demo@1234", role: "DISPATCHER", dest: "Command Center" },
+  { label: "Admin", email: "admin@trauma.demo", password: "Admin@1234", role: "ADMIN", dest: "Command Center" },
+  { label: "Government", email: "gov@trauma.demo", password: "Gov@1234", role: "GOVERNMENT", dest: "Analytics" },
 ]
+
+const DEMO_HOSPITAL_STAFF = [
+  { label: "Caritas Kottayam", email: "hospital.kottayam@trauma.demo", password: "Hosp@1234", hospital: "Caritas Hospital Kottayam" },
+  { label: "Jubilee TVM", email: "hospital.tvm@trauma.demo", password: "Hosp@1234", hospital: "Jubilee Memorial Hospital Palayam" },
+  { label: "Kozhikode Dist. Hospital", email: "hospital.kozhikode@trauma.demo", password: "Hosp@1234", hospital: "Kozhikode District Co-operative Hospital" },
+  { label: "Jubilee Thrissur", email: "hospital.thrissur@trauma.demo", password: "Hosp@1234", hospital: "Jubilee Mission Medical College Thrissur" },
+]
+
+
 
 export function LoginPage() {
   const [email, setEmail] = useState("dispatcher@trauma.demo")
@@ -153,11 +161,30 @@ export function LoginPage() {
                 >
                   <div className={styles.demoRole}>{r.label}</div>
                   <div className={styles.demoEmail}>{r.email}</div>
-                  <div className={styles.demoDest}>
-                    → {r.role === "HOSPITAL_STAFF" ? "Hospital Dashboard" : r.role === "GOVERNMENT" ? "Analytics" : "Command Center"}
-                  </div>
+                  <div className={styles.demoDest}>→ {r.dest}</div>
                 </button>
               ))}
+            </div>
+
+            {/* Hospital Staff — individual per hospital */}
+            <div style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-text-muted, #64748b)", marginBottom: 8 }}>
+                🏥 Hospital Staff Logins — each manages their own hospital
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                {DEMO_HOSPITAL_STAFF.map((h) => (
+                  <button
+                    key={h.email}
+                    onClick={() => { setEmail(h.email); setPassword(h.password) }}
+                    className={`${styles.demoBtn} ${email === h.email ? styles.active : ""}`}
+                    style={{ textAlign: "left" }}
+                  >
+                    <div className={styles.demoRole} style={{ fontSize: 11 }}>{h.label}</div>
+                    <div className={styles.demoEmail} style={{ fontSize: 10, opacity: 0.8 }}>{h.hospital}</div>
+                    <div className={styles.demoDest}>→ Staff Portal</div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

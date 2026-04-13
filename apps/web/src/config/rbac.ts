@@ -13,7 +13,7 @@ export const ROLE_ROUTES: Record<Role, string[]> = {
     "/blackspots", "/analytics"
   ],
   HOSPITAL_STAFF: [
-    "/hospital-dashboard", "/incidents", "/hospitals"
+    "/hospital-staff", "/hospital-dashboard", "/incidents", "/hospitals"
   ],
   GOVERNMENT: [
     "/command-center", "/analytics", "/simulation", "/blackspots",
@@ -52,7 +52,7 @@ export const ROLE_LABELS: Record<Role, { label: string; color: string; bg: strin
 export const ROLE_HOME: Record<Role, string> = {
   ADMIN: "/command-center",
   DISPATCHER: "/command-center",
-  HOSPITAL_STAFF: "/hospital-dashboard",
+  HOSPITAL_STAFF: "/hospital-staff",
   GOVERNMENT: "/analytics",
   PARAMEDIC: "/login",
 }

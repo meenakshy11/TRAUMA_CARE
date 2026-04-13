@@ -1,12 +1,10 @@
 """
-Insert the 4 demo login-page accounts into the running DB.
+Insert demo login-page accounts into the running DB.
 Run once: docker compose exec backend python scripts/seed_demo_users.py
 """
 import asyncio
 import sys
-import os
 
-# Make sure app package is importable
 sys.path.insert(0, "/app")
 
 from app.db.session import AsyncSessionLocal
@@ -25,29 +23,56 @@ DEMO_USERS = [
          full_name="Suresh Kumar IAS",  role=UserRole.GOVERNMENT),
 ]
 
+# Maps email → (full_name, hospital_name_prefix)
+HOSPITAL_STAFF_USERS = [
+    ("hospital.kottayam@trauma.demo",  "Dr. Sreeja Nair",   "Medical College Hospital Kottayam"),
+    ("hospital.tvm@trauma.demo",       "Dr. Anitha Pillai", "SAT Hospital"),
+    ("hospital.kozhikode@trauma.demo", "Dr. Rajan Kutty",   "Government Medical College Kozhikode"),
+    ("hospital.thrissur@trauma.demo",  "Dr. Mary Thomas",   "Jubilee Mission"),
+    # Legacy alias — still works
+    ("hospital@trauma.demo",           "Dr. Sreeja Nair",   "Medical College Hospital Kottayam"),
+]
+
 
 async def main():
     async with AsyncSessionLocal() as db:
-        # Get first hospital id for the hospital staff demo user
-        result = await db.execute(select(Hospital).limit(1))
-        first_hospital = result.scalar_one_or_none()
-        first_hospital_id = first_hospital.id if first_hospital else None
+        # Fetch all hospitals so we can link by name
+        result = await db.execute(select(Hospital))
+        hospitals = result.scalars().all()
+        hospital_map = {h.name: h.id for h in hospitals}
 
-        hospital_demo = dict(
-            email="hospital@trauma.demo", password="Hosp@1234",
-            full_name="Dr. Sreeja Nair",  role=UserRole.HOSPITAL_STAFF,
-            hospital_id=first_hospital_id,
-        )
+        def find_hospital_id(name_fragment: str):
+            for name, hid in hospital_map.items():
+                if name_fragment.lower() in name.lower():
+                    return hid
+            # Fallback: first hospital
+            return hospitals[0].id if hospitals else None
 
-        all_users = DEMO_USERS + [hospital_demo]
-
-        for u in all_users:
+        # Seed generic demo users
+        for u in DEMO_USERS:
             existing = await get_user_by_email(db, u["email"])
             if existing:
                 print(f"  [skip] {u['email']} already exists")
             else:
                 await create_user(db, **u)
                 print(f"  [created] {u['email']}")
+
+        # Seed hospital staff users
+        for email, full_name, hospital_fragment in HOSPITAL_STAFF_USERS:
+            hospital_id = find_hospital_id(hospital_fragment)
+            existing = await get_user_by_email(db, email)
+            if existing:
+                print(f"  [skip] {email} already exists")
+            else:
+                await create_user(
+                    db,
+                    email=email,
+                    password="Hosp@1234",
+                    full_name=full_name,
+                    role=UserRole.HOSPITAL_STAFF,
+                    hospital_id=hospital_id,
+                )
+                print(f"  [created] {email} → hospital_id={hospital_id}")
 
         await db.commit()
     print("Done.")

@@ -1,0 +1,481 @@
+TraumaPlatform/
+├── .env.example
+├── .gitignore
+├── docs.pdf
+├── null
+├── package-lock.json
+├── package.json.bak
+├── pnpm-workspace.yaml
+├── project_structure.txt
+├── Trauma-proposal-KSUM.docx
+├── TraumaPlatform_FullArchitecturePlan.md
+├── TraumaPlatform_MobileDemo_ProductionPlan.md
+├── turbo.json
+├── apps/
+│   ├── backend/
+│   │   ├── .env.example
+│   │   ├── alembic.ini
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── kerala_hospitals_geocoded.json
+│   │   ├── pytest.ini
+│   │   ├── requirements.txt
+│   │   ├── seed_hospitals.py
+│   │   ├── alembic/
+│   │   │   ├── env.py
+│   │   │   ├── script.py.mako
+│   │   │   └── versions/
+│   │   │       └── 0001_initial_schema.py
+│   │   ├── app/
+│   │   │   ├── .gitignore
+│   │   │   ├── config.py
+│   │   │   ├── dependencies.py
+│   │   │   ├── main.py
+│   │   │   ├── __init__.py
+│   │   │   ├── api/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── v1/
+│   │   │   │   │   ├── ambulances.py
+│   │   │   │   │   ├── analytics.py
+│   │   │   │   │   ├── auth.py
+│   │   │   │   │   ├── blackspots.py
+│   │   │   │   │   ├── dispatch.py
+│   │   │   │   │   ├── hospitals.py
+│   │   │   │   │   ├── incidents.py
+│   │   │   │   │   ├── notifications.py
+│   │   │   │   │   ├── patients.py
+│   │   │   │   │   ├── public.py
+│   │   │   │   │   ├── router.py
+│   │   │   │   │   ├── simulation.py
+│   │   │   │   │   ├── uploads.py
+│   │   │   │   │   ├── users.py
+│   │   │   │   │   ├── websocket.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── __pycache__/
+│   │   │   │   │       ├── ambulances.cpython-311.pyc
+│   │   │   │   │       ├── analytics.cpython-311.pyc
+│   │   │   │   │       ├── auth.cpython-311.pyc
+│   │   │   │   │       ├── blackspots.cpython-311.pyc
+│   │   │   │   │       ├── dispatch.cpython-311.pyc
+│   │   │   │   │       ├── hospitals.cpython-311.pyc
+│   │   │   │   │       ├── incidents.cpython-311.pyc
+│   │   │   │   │       ├── notifications.cpython-311.pyc
+│   │   │   │   │       ├── patients.cpython-311.pyc
+│   │   │   │   │       ├── public.cpython-311.pyc
+│   │   │   │   │       ├── router.cpython-311.pyc
+│   │   │   │   │       ├── simulation.cpython-311.pyc
+│   │   │   │   │       ├── users.cpython-311.pyc
+│   │   │   │   │       ├── websocket.cpython-311.pyc
+│   │   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   │   └── __pycache__/
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   ├── core/
+│   │   │   │   ├── constants.py
+│   │   │   │   ├── exceptions.py
+│   │   │   │   ├── middleware.py
+│   │   │   │   ├── security.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__/
+│   │   │   │       ├── constants.cpython-310.pyc
+│   │   │   │       ├── constants.cpython-311.pyc
+│   │   │   │       ├── middleware.cpython-311.pyc
+│   │   │   │       ├── security.cpython-311.pyc
+│   │   │   │       ├── __init__.cpython-310.pyc
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   ├── db/
+│   │   │   │   ├── base.py
+│   │   │   │   ├── init_db.py
+│   │   │   │   ├── session.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__/
+│   │   │   │       ├── base.cpython-310.pyc
+│   │   │   │       ├── base.cpython-311.pyc
+│   │   │   │       ├── init_db.cpython-311.pyc
+│   │   │   │       ├── session.cpython-310.pyc
+│   │   │   │       ├── session.cpython-311.pyc
+│   │   │   │       ├── __init__.cpython-310.pyc
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   ├── models/
+│   │   │   │   ├── ambulance.py
+│   │   │   │   ├── audit.py
+│   │   │   │   ├── blackspot.py
+│   │   │   │   ├── dispatch.py
+│   │   │   │   ├── hospital.py
+│   │   │   │   ├── incident.py
+│   │   │   │   ├── notification.py
+│   │   │   │   ├── patient.py
+│   │   │   │   ├── user.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__/
+│   │   │   │       ├── ambulance.cpython-310.pyc
+│   │   │   │       ├── ambulance.cpython-311.pyc
+│   │   │   │       ├── audit.cpython-310.pyc
+│   │   │   │       ├── audit.cpython-311.pyc
+│   │   │   │       ├── blackspot.cpython-310.pyc
+│   │   │   │       ├── blackspot.cpython-311.pyc
+│   │   │   │       ├── dispatch.cpython-310.pyc
+│   │   │   │       ├── dispatch.cpython-311.pyc
+│   │   │   │       ├── hospital.cpython-310.pyc
+│   │   │   │       ├── hospital.cpython-311.pyc
+│   │   │   │       ├── incident.cpython-310.pyc
+│   │   │   │       ├── incident.cpython-311.pyc
+│   │   │   │       ├── notification.cpython-310.pyc
+│   │   │   │       ├── notification.cpython-311.pyc
+│   │   │   │       ├── patient.cpython-310.pyc
+│   │   │   │       ├── patient.cpython-311.pyc
+│   │   │   │       ├── user.cpython-310.pyc
+│   │   │   │       ├── user.cpython-311.pyc
+│   │   │   │       ├── __init__.cpython-310.pyc
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   ├── schemas/
+│   │   │   │   ├── ambulance.py
+│   │   │   │   ├── analytics.py
+│   │   │   │   ├── auth.py
+│   │   │   │   ├── blackspot.py
+│   │   │   │   ├── dispatch.py
+│   │   │   │   ├── hospital.py
+│   │   │   │   ├── incident.py
+│   │   │   │   ├── notification.py
+│   │   │   │   ├── patient.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── services/
+│   │   │   │   ├── ambulance_service.py
+│   │   │   │   ├── analytics_service.py
+│   │   │   │   ├── auth_service.py
+│   │   │   │   ├── blackspot_service.py
+│   │   │   │   ├── dispatch_service.py
+│   │   │   │   ├── geo_service.py
+│   │   │   │   ├── hospital_service.py
+│   │   │   │   ├── incident_service.py
+│   │   │   │   ├── media_service.py
+│   │   │   │   ├── notification_service.py
+│   │   │   │   ├── patient_service.py
+│   │   │   │   ├── simulation_service.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__/
+│   │   │   │       ├── ambulance_service.cpython-311.pyc
+│   │   │   │       ├── analytics_service.cpython-311.pyc
+│   │   │   │       ├── auth_service.cpython-311.pyc
+│   │   │   │       ├── blackspot_service.cpython-311.pyc
+│   │   │   │       ├── dispatch_service.cpython-311.pyc
+│   │   │   │       ├── geo_service.cpython-311.pyc
+│   │   │   │       ├── hospital_service.cpython-311.pyc
+│   │   │   │       ├── incident_service.cpython-311.pyc
+│   │   │   │       ├── notification_service.cpython-311.pyc
+│   │   │   │       ├── patient_service.cpython-311.pyc
+│   │   │   │       ├── simulation_service.cpython-311.pyc
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   ├── tasks/
+│   │   │   │   ├── alert_tasks.py
+│   │   │   │   ├── analytics_tasks.py
+│   │   │   │   ├── celery_app.py
+│   │   │   │   ├── location_tasks.py
+│   │   │   │   ├── sync_tasks.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── tests/
+│   │   │   │   ├── conftest.py
+│   │   │   │   ├── test_analytics.py
+│   │   │   │   ├── test_dispatch.py
+│   │   │   │   ├── test_incidents.py
+│   │   │   │   └── test_triage.py
+│   │   │   └── __pycache__/
+│   │   │       ├── config.cpython-310.pyc
+│   │   │       ├── config.cpython-311.pyc
+│   │   │       ├── dependencies.cpython-311.pyc
+│   │   │       ├── main.cpython-311.pyc
+│   │   │       ├── __init__.cpython-310.pyc
+│   │   │       └── __init__.cpython-311.pyc
+│   │   └── scripts/
+│   │       ├── create_superadmin.py
+│   │       ├── seed_data.py
+│   │       ├── seed_demo_users.py
+│   │       └── seed_incidents.py
+│   ├── mobile/
+│   │   ├── .env.example
+│   │   ├── app.json
+│   │   ├── babel.config.js
+│   │   ├── build_mobile.py
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── src/
+│   │       ├── app/
+│   │       │   ├── _layout.tsx
+│   │       │   ├── (app)/
+│   │       │   │   ├── active.tsx
+│   │       │   │   ├── hospital.tsx
+│   │       │   │   ├── index.tsx
+│   │       │   │   ├── new-incident.tsx
+│   │       │   │   ├── photo.tsx
+│   │       │   │   ├── profile.tsx
+│   │       │   │   ├── triage.tsx
+│   │       │   │   ├── vitals.tsx
+│   │       │   │   └── _layout.tsx
+│   │       │   └── (auth)/
+│   │       │       ├── login.tsx
+│   │       │       └── _layout.tsx
+│   │       ├── components/
+│   │       │   ├── ConfirmBottomSheet.tsx
+│   │       │   ├── ErrorToast.tsx
+│   │       │   ├── GoldenHourBanner.tsx
+│   │       │   ├── LoadingOverlay.tsx
+│   │       │   ├── OfflineBanner.tsx
+│   │       │   ├── SeverityBadge.tsx
+│   │       │   ├── StatusStepper.tsx
+│   │       │   └── TriageColorBadge.tsx
+│   │       ├── demo/
+│   │       │   ├── demoData.ts
+│   │       │   ├── demoGPS.ts
+│   │       │   ├── demoHandlers.ts
+│   │       │   └── demoNotifications.ts
+│   │       ├── hooks/
+│   │       │   ├── useAuth.ts
+│   │       │   ├── useCamera.ts
+│   │       │   ├── useGoldenHourTimer.ts
+│   │       │   ├── useGPS.ts
+│   │       │   ├── useGPSTracking.ts
+│   │       │   ├── useIncident.ts
+│   │       │   ├── useOfflineQueue.ts
+│   │       │   └── usePushNotifications.ts
+│   │       ├── screens/
+│   │       │   ├── IncidentStatus/
+│   │       │   │   ├── IncidentStatusScreen.tsx
+│   │       │   │   └── components/
+│   │       │   │       ├── DispatchConfirmCard.tsx
+│   │       │   │       ├── HospitalInfoCard.tsx
+│   │       │   │       └── StatusStepper.tsx
+│   │       │   ├── IncidentSummary/
+│   │       │   │   └── IncidentSummaryScreen.tsx
+│   │       │   ├── NewIncident/
+│   │       │   │   ├── NewIncidentScreen.tsx
+│   │       │   │   ├── NewIncidentViewModel.ts
+│   │       │   │   └── components/
+│   │       │   │       ├── AccidentTypeGrid.tsx
+│   │       │   │       ├── GPSCaptureCard.tsx
+│   │       │   │       ├── PatientCountStepper.tsx
+│   │       │   │       └── SeveritySlider.tsx
+│   │       │   ├── Photo/
+│   │       │   │   ├── PhotoCaptureScreen.tsx
+│   │       │   │   └── components/
+│   │       │   │       └── PhotoThumbnailGrid.tsx
+│   │       │   ├── Triage/
+│   │       │   │   ├── TriageScreen.tsx
+│   │       │   │   ├── TriageViewModel.ts
+│   │       │   │   └── components/
+│   │       │   │       ├── GCSQuickGuide.tsx
+│   │       │   │       ├── PatientTabRow.tsx
+│   │       │   │       ├── StartWizardCard.tsx
+│   │       │   │       └── TriageColorResult.tsx
+│   │       │   └── Vitals/
+│   │       │       ├── VitalsScreen.tsx
+│   │       │       ├── VitalsViewModel.ts
+│   │       │       └── components/
+│   │       │           ├── VitalInputRow.tsx
+│   │       │           ├── VitalRangeIndicator.tsx
+│   │       │           └── VitalsHistory.tsx
+│   │       ├── services/
+│   │       │   ├── apiService.ts
+│   │       │   ├── cameraService.ts
+│   │       │   ├── locationService.ts
+│   │       │   ├── notificationService.ts
+│   │       │   └── offlineService.ts
+│   │       ├── store/
+│   │       │   ├── authStore.ts
+│   │       │   ├── incidentStore.ts
+│   │       │   └── syncStore.ts
+│   │       └── utils/
+│   │           ├── permissions.ts
+│   │           ├── storage.ts
+│   │           └── validation.ts
+│   └── web/
+│       ├── .env
+│       ├── .env.example
+│       ├── apply_theme.py
+│       ├── Dockerfile
+│       ├── fix_auth2.py
+│       ├── fix_auth_rbac.py
+│       ├── fix_files.py
+│       ├── index.html
+│       ├── null
+│       ├── package-lock.json
+│       ├── package.json
+│       ├── theme_pages.py
+│       ├── tsconfig.json
+│       ├── vite.config.ts
+│       ├── public/
+│       │   └── index.html
+│       └── src/
+│           ├── App.tsx
+│           ├── main.tsx
+│           ├── vite-env.d.ts
+│           ├── api/
+│           │   ├── ambulances.api.ts
+│           │   ├── analytics.api.ts
+│           │   ├── auth.api.ts
+│           │   ├── blackspots.api.ts
+│           │   ├── client.ts
+│           │   ├── demo-fixtures.ts
+│           │   ├── dispatch.api.ts
+│           │   ├── hospitals.api.ts
+│           │   ├── incidents.api.ts
+│           │   ├── index.ts
+│           │   ├── notifications.api.ts
+│           │   └── patients.api.ts
+│           ├── components/
+│           │   ├── ConfirmModal.tsx
+│           │   ├── DataTable.tsx
+│           │   ├── DevBanner.tsx
+│           │   ├── LoadingSpinner.tsx
+│           │   ├── ProtectedRoute.tsx
+│           │   ├── StatusBadge.tsx
+│           │   ├── TriageColorBadge.tsx
+│           │   ├── Layout/
+│           │   │   ├── AppShell.tsx
+│           │   │   ├── Sidebar.module.css
+│           │   │   ├── Sidebar.tsx
+│           │   │   ├── TopBar.module.css
+│           │   │   └── TopBar.tsx
+│           │   └── ui/
+│           │       └── PageLoader.tsx
+│           ├── config/
+│           │   └── rbac.ts
+│           ├── hooks/
+│           │   ├── useAuth.ts
+│           │   ├── useDispatch.ts
+│           │   ├── useLiveAmbulances.ts
+│           │   ├── useLiveIncidents.ts
+│           │   ├── useMapLayers.ts
+│           │   ├── usePermission.ts
+│           │   ├── useTheme.ts
+│           │   └── useWebSocket.ts
+│           ├── pages/
+│           │   ├── Admin/
+│           │   │   ├── AdminPage.tsx
+│           │   │   ├── AlertRulesPage.tsx
+│           │   │   ├── AmbulanceRegistryPage.tsx
+│           │   │   ├── HospitalRegistryPage.tsx
+│           │   │   ├── StagingStationPage.tsx
+│           │   │   └── UserManagementPage.tsx
+│           │   ├── Analytics/
+│           │   │   ├── AnalyticsDashboardPage.tsx
+│           │   │   └── components/
+│           │   │       ├── CoverageGapMap.tsx
+│           │   │       ├── DistrictPerformanceTable.tsx
+│           │   │       ├── GoldenHourChart.tsx
+│           │   │       ├── IncidentTrendsLine.tsx
+│           │   │       ├── KPISummaryCards.tsx
+│           │   │       └── ResponseTimeHistogram.tsx
+│           │   ├── BlackSpots/
+│           │   │   ├── BlackSpotPage.tsx
+│           │   │   └── components/
+│           │   │       ├── BlackSpotHeatmap.tsx
+│           │   │       └── BlackSpotTable.tsx
+│           │   ├── CommandCenter/
+│           │   │   ├── CommandCenterPage.module.css
+│           │   │   ├── CommandCenterPage.tsx
+│           │   │   └── components/
+│           │   │       ├── AlertBanner.tsx
+│           │   │       ├── AmbulancePanel.tsx
+│           │   │       ├── DispatchPanel.tsx
+│           │   │       ├── HospitalFilterBar.tsx
+│           │   │       ├── HospitalPanel.tsx
+│           │   │       ├── IncidentPanel.tsx
+│           │   │       ├── LiveMap.tsx
+│           │   │       ├── MapLayerControl.tsx
+│           │   │       └── MCIBadge.tsx
+│           │   ├── HospitalDashboard/
+│           │   │   ├── HospitalDashboardPage.tsx
+│           │   │   └── components/
+│           │   │       ├── IncomingAmbulanceCard.tsx
+│           │   │       ├── PreArrivalAlertBanner.tsx
+│           │   │       └── ResourceUpdateForm.tsx
+│           │   ├── Hospitals/
+│           │   │   ├── HospitalDetailPage.tsx
+│           │   │   ├── HospitalListPage.tsx
+│           │   │   └── components/
+│           │   │       ├── HospitalMap.tsx
+│           │   │       ├── ResourceBar.tsx
+│           │   │       └── TraumaSlotTable.tsx
+│           │   ├── IncidentDetail/
+│           │   │   ├── IncidentDetailPage.module.css
+│           │   │   ├── IncidentDetailPage.tsx
+│           │   │   ├── mockDataGenerators.ts
+│           │   │   └── components/
+│           │   │       ├── DispatchHistory.tsx
+│           │   │       ├── IncidentMap.tsx
+│           │   │       ├── IncidentTimeline.tsx
+│           │   │       ├── PatientList.tsx
+│           │   │       ├── PhotoGallery.tsx
+│           │   │       ├── TriageCard.tsx
+│           │   │       └── VitalSignsChart.tsx
+│           │   ├── Incidents/
+│           │   │   ├── IncidentListPage.module.css
+│           │   │   └── IncidentListPage.tsx
+│           │   ├── Login/
+│           │   │   ├── LoginPage.module.css
+│           │   │   └── LoginPage.tsx
+│           │   ├── NotFound/
+│           │   │   └── NotFoundPage.tsx
+│           │   ├── PublicReport/
+│           │   │   └── PublicReportPage.tsx
+│           │   └── Simulation/
+│           │       ├── SimulationPage.tsx
+│           │       └── components/
+│           │           ├── CoverageResultOverlay.tsx
+│           │           ├── ScenarioForm.tsx
+│           │           └── SimulationMap.tsx
+│           ├── store/
+│           │   ├── ambulanceStore.ts
+│           │   ├── authStore.ts
+│           │   ├── hospitalStore.ts
+│           │   ├── incidentStore.ts
+│           │   ├── mapStore.ts
+│           │   └── notificationStore.ts
+│           ├── styles/
+│           │   ├── globals.css
+│           │   ├── leaflet-overrides.css
+│           │   └── theme.css
+│           ├── types/
+│           │   ├── ambulance.types.ts
+│           │   ├── analytics.types.ts
+│           │   ├── dispatch.types.ts
+│           │   ├── hospital.types.ts
+│           │   ├── incident.types.ts
+│           │   ├── patient.types.ts
+│           │   └── user.types.ts
+│           └── utils/
+│               ├── constants.ts
+│               ├── date.ts
+│               ├── geo.ts
+│               └── triage.ts
+└── packages/
+    └── shared/
+        ├── package.json
+        ├── tsconfig.json
+        └── src/
+            ├── index.ts
+            ├── api/
+            │   ├── ambulances.ts
+            │   ├── analytics.ts
+            │   ├── auth.ts
+            │   ├── client.ts
+            │   ├── dispatch.ts
+            │   ├── hospitals.ts
+            │   ├── incidents.ts
+            │   └── patients.ts
+            ├── constants/
+            │   ├── enums.ts
+            │   ├── gcs.ts
+            │   ├── golden-hour.ts
+            │   └── triage.ts
+            ├── types/
+            │   ├── ambulance.ts
+            │   ├── analytics.ts
+            │   ├── dispatch.ts
+            │   ├── hospital.ts
+            │   ├── incident.ts
+            │   ├── patient.ts
+            │   └── user.ts
+            └── utils/
+                ├── date.ts
+                └── geo.ts

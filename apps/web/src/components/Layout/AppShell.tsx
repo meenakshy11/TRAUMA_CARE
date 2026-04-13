@@ -5,7 +5,7 @@ import { TopBar } from "./TopBar"
 import { useWebSocket } from "../../hooks/useWebSocket"
 
 // Pages that need full-height / no padding (map-centric)
-const FULL_BLEED_ROUTES = ["/command-center"]
+const FULL_BLEED_ROUTES = ["/command-center", "/simulation"]
 
 export function AppShell() {
   useWebSocket()

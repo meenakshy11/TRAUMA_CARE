@@ -7,8 +7,9 @@ from app.models.hospital import Hospital, HospitalResource
 from app.models.ambulance import Ambulance, StagingStation
 from app.models.blackspot import BlackSpot
 
-# Path: apps/backend/app/db/init_db.py  →  kerala_hospitals_geocoded.json sits at apps/backend/
-HOSPITALS_JSON = Path(__file__).resolve().parent.parent.parent / "kerala_hospitals_geocoded.json"
+# Path: apps/backend/app/db/init_db.py  →  JSON files sit at apps/backend/
+HOSPITALS_JSON    = Path(__file__).resolve().parent.parent.parent / "kerala_hospitals_geocoded.json"
+AMBULANCES_JSON   = Path(__file__).resolve().parent.parent.parent / "kerala_ambulances_50.json"
 
 _TRAUMA_LEVEL_MAP = {
     "LEVEL_1": TraumaLevel.LEVEL_1,
@@ -138,30 +139,52 @@ async def init_db(db: AsyncSession):
         await db.flush()
         station_objs.append(s)
 
-    # ── Ambulances ─────────────────────────────────────────────────────────────
-    ambulances_data = [
-        dict(reg="KL-08-001", typ=AmbulanceType.ALS,  district="Thiruvananthapuram", lat=8.5110,  lon=76.9627, st=0),
-        dict(reg="KL-08-002", typ=AmbulanceType.ALS,  district="Thiruvananthapuram", lat=8.5076,  lon=76.9621, st=1),
-        dict(reg="KL-08-003", typ=AmbulanceType.BLS,  district="Kollam",             lat=8.8800,  lon=76.6000, st=None),
-        dict(reg="KL-08-004", typ=AmbulanceType.BLS,  district="Kottayam",           lat=9.5800,  lon=76.5100, st=3),
-        dict(reg="KL-08-005", typ=AmbulanceType.ALS,  district="Kozhikode",          lat=11.2588, lon=75.7804, st=2),
-        dict(reg="KL-08-006", typ=AmbulanceType.BLS,  district="Malappuram",         lat=11.1296, lon=76.0057, st=4),
-        dict(reg="KL-08-007", typ=AmbulanceType.NICU, district="Thrissur",           lat=10.5276, lon=76.2144, st=None),
-        dict(reg="KL-08-008", typ=AmbulanceType.ALS,  district="Thiruvananthapuram", lat=8.4800,  lon=76.9200, st=None),
-    ]
-    for ad in ambulances_data:
-        a = Ambulance(
-            registration_no=ad["reg"],
-            ambulance_type=ad["typ"],
-            district=ad["district"],
-            current_lat=ad["lat"],
-            current_lon=ad["lon"],
-            status=AmbulanceStatus.AVAILABLE,
-            staging_station_id=station_objs[ad["st"]].id if ad["st"] is not None else None,
-            device_id=f"GPS-{ad['reg']}",
-            is_active=True,
-        )
-        db.add(a)
+    # ── Ambulances from JSON ──────────────────────────────────────────────────
+    if not AMBULANCES_JSON.exists():
+        print(f"  WARNING: {AMBULANCES_JSON} not found — skipping ambulance seed")
+    else:
+        with open(AMBULANCES_JSON, "r", encoding="utf-8") as f:
+            ambulance_records = json.load(f)
+
+        print(f"  Seeding {len(ambulance_records)} ambulances from JSON...")
+
+        for rec in ambulance_records:
+            # Map staging_station_id string (e.g. "stg-003") to one of the 5 real station objects
+            stg_str = rec.get("staging_station_id", "")
+            if stg_str and stg_str.startswith("stg-"):
+                try:
+                    stg_idx = (int(stg_str.split("-")[1]) - 1) % len(station_objs)
+                    stg_id  = station_objs[stg_idx].id
+                except (ValueError, IndexError):
+                    stg_id = None
+            else:
+                stg_id = None
+
+            # Parse status — fall back to AVAILABLE if unrecognised
+            try:
+                status = AmbulanceStatus(rec.get("status", "AVAILABLE"))
+            except ValueError:
+                status = AmbulanceStatus.AVAILABLE
+
+            # Parse type — fall back to BLS if unrecognised
+            try:
+                amb_type = AmbulanceType(rec.get("ambulance_type", "BLS"))
+            except ValueError:
+                amb_type = AmbulanceType.BLS
+
+            a = Ambulance(
+                registration_no=rec["registration_no"],
+                ambulance_type=amb_type,
+                district=rec.get("district", "Unknown"),
+                current_lat=rec.get("current_lat"),
+                current_lon=rec.get("current_lon"),
+                status=status,
+                staging_station_id=stg_id,
+                device_id=rec.get("device_id"),
+                speed_kmph=rec.get("speed_kmph"),
+                is_active=rec.get("is_active", True),
+            )
+            db.add(a)
 
     # ── Black Spots ────────────────────────────────────────────────────────────
     blackspots_data = [

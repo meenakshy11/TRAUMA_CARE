@@ -9,10 +9,32 @@ export const DEMO_USERS: Record<string, { password: string; user: any; tokens: a
     user: { id: "u-002", email: "admin@trauma.demo", full_name: "Priya Menon", role: "ADMIN", phone: "+91-9876543211", hospital_id: null, ambulance_id: null, is_active: true },
     tokens: { access_token: "demo_token_admin", token_type: "bearer" },
   },
+  // Hospital Staff accounts — one per demo hospital
+  "hospital.kottayam@trauma.demo": {
+    password: "Hosp@1234",
+    user: { id: "u-003", email: "hospital.kottayam@trauma.demo", full_name: "Dr. Sreeja Nair", role: "HOSPITAL_STAFF", phone: "+91-9876543212", hospital_id: "h-001", ambulance_id: null, is_active: true },
+    tokens: { access_token: "demo_token_hospital_kottayam", token_type: "bearer" },
+  },
+  // Legacy alias — still works for existing demos
   "hospital@trauma.demo": {
     password: "Hosp@1234",
-    user: { id: "u-003", email: "hospital@trauma.demo", full_name: "Dr. Sreeja Nair", role: "HOSPITAL_STAFF", phone: "+91-9876543212", hospital_id: "h-001", ambulance_id: null, is_active: true },
-    tokens: { access_token: "demo_token_hospital", token_type: "bearer" },
+    user: { id: "u-003", email: "hospital.kottayam@trauma.demo", full_name: "Dr. Sreeja Nair", role: "HOSPITAL_STAFF", phone: "+91-9876543212", hospital_id: "h-001", ambulance_id: null, is_active: true },
+    tokens: { access_token: "demo_token_hospital_kottayam", token_type: "bearer" },
+  },
+  "hospital.tvm@trauma.demo": {
+    password: "Hosp@1234",
+    user: { id: "u-005", email: "hospital.tvm@trauma.demo", full_name: "Dr. Anitha Pillai", role: "HOSPITAL_STAFF", phone: "+91-9876543214", hospital_id: "h-002", ambulance_id: null, is_active: true },
+    tokens: { access_token: "demo_token_hospital_tvm", token_type: "bearer" },
+  },
+  "hospital.kozhikode@trauma.demo": {
+    password: "Hosp@1234",
+    user: { id: "u-006", email: "hospital.kozhikode@trauma.demo", full_name: "Dr. Rajan Kutty", role: "HOSPITAL_STAFF", phone: "+91-9876543215", hospital_id: "h-003", ambulance_id: null, is_active: true },
+    tokens: { access_token: "demo_token_hospital_kozhikode", token_type: "bearer" },
+  },
+  "hospital.thrissur@trauma.demo": {
+    password: "Hosp@1234",
+    user: { id: "u-007", email: "hospital.thrissur@trauma.demo", full_name: "Dr. Mary Thomas", role: "HOSPITAL_STAFF", phone: "+91-9876543216", hospital_id: "h-004", ambulance_id: null, is_active: true },
+    tokens: { access_token: "demo_token_hospital_thrissur", token_type: "bearer" },
   },
   "gov@trauma.demo": {
     password: "Gov@1234",

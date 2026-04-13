@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 import { useShallow } from "zustand/react/shallow"
 
 // ── Filter shape ─────────────────────────────────────────────────────────────
@@ -57,29 +58,37 @@ interface HospitalStore {
   resetFilters:    () => void
 }
 
-export const useHospitalStore = create<HospitalStore>((set) => ({
-  hospitals: {},
-  filters:   { ...DEFAULT_FILTERS },
+export const useHospitalStore = create<HospitalStore>()(
+  persist(
+    (set) => ({
+      hospitals: {},
+      filters:   { ...DEFAULT_FILTERS },
 
-  setHospitals: (hospitals) =>
-    set({ hospitals: Object.fromEntries(hospitals.map((h: any) => [h.id, h])) }),
+      setHospitals: (hospitals) =>
+        set({ hospitals: Object.fromEntries(hospitals.map((h: any) => [h.id, h])) }),
 
-  updateResources: (id, resources) =>
-    set((s) => ({
-      hospitals: {
-        ...s.hospitals,
-        [id]: s.hospitals[id]
-          ? { ...s.hospitals[id], resources: { ...s.hospitals[id].resources, ...resources } }
-          : { id, resources },
-      },
-    })),
+      updateResources: (id, resources) =>
+        set((s) => ({
+          hospitals: {
+            ...s.hospitals,
+            [id]: s.hospitals[id]
+              ? { ...s.hospitals[id], resources: { ...s.hospitals[id].resources, ...resources } }
+              : { id, resources },
+          },
+        })),
 
-  setFilter: (key, value) =>
-    set((s) => ({ filters: { ...s.filters, [key]: value } })),
+      setFilter: (key, value) =>
+        set((s) => ({ filters: { ...s.filters, [key]: value } })),
 
-  resetFilters: () =>
-    set({ filters: { ...DEFAULT_FILTERS } }),
-}))
+      resetFilters: () =>
+        set({ filters: { ...DEFAULT_FILTERS } }),
+    }),
+    {
+      name: "hospital-storage",
+      partialize: (state) => ({ hospitals: state.hospitals }),
+    }
+  )
+)
 
 // ── Reactive selector hooks (use these in components) ────────────────────────
 // These subscribe to BOTH hospitals and filters so they re-render correctly.
@@ -99,3 +108,24 @@ export function useAvailableDistricts(): string[] {
     return Array.from(districts).sort()
   }))
 }
+
+/**
+ * Merges any localStorage-persisted resource overrides into a hospitals array.
+ * Call this after fetching hospitals from the API to apply any staff updates.
+ */
+export function mergePersistedResources(hospitals: any[]): any[] {
+  try {
+    const raw = localStorage.getItem("hospital-storage")
+    if (!raw) return hospitals
+    const stored = JSON.parse(raw)
+    const overrides: Record<string, any> = stored?.state?.hospitals ?? {}
+    if (Object.keys(overrides).length === 0) return hospitals
+    return hospitals.map((h) =>
+      overrides[h.id]?.resources
+        ? { ...h, resources: { ...h.resources, ...overrides[h.id].resources } }
+        : h
+    )
+  } catch {
+    return hospitals
+  }
+}

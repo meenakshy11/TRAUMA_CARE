@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useIncidentStore } from "../../../store/incidentStore"
 import { useAmbulanceStore } from "../../../store/ambulanceStore"
-import { useHospitalStore, useFilteredHospitals } from "../../../store/hospitalStore"
+import { useFilteredHospitals } from "../../../store/hospitalStore"
 import { useMapStore } from "../../../store/mapStore"
 import { getCurrentTheme, getMapTileUrl } from "../../../hooks/useTheme"
 import { DEMO_BLACKSPOTS } from "../../../api/demo-fixtures"
@@ -84,6 +84,7 @@ export function LiveMap() {
 
   const incidents         = useIncidentStore((s) => s.incidents)
   const positions         = useAmbulanceStore((s) => s.positions)
+  const ambulances        = useAmbulanceStore((s) => s.ambulances)
   const filteredHospitals = useFilteredHospitals()   // ← reactive to hospitals + filters
   const mapStore          = useMapStore()
   const [mapReady, setMapReady] = useState(false)
@@ -176,23 +177,38 @@ export function LiveMap() {
       return
     }
     Object.entries(positions).forEach(([id, pos]: [string, any]) => {
+      const amb = ambulances[id]
       let statusColor = "var(--color-success)"
-      if (pos.status === "DISPATCHED" || pos.status === "ON_SCENE") statusColor = "var(--color-warning)"
-      if (pos.status === "TRANSPORTING") statusColor = "var(--color-danger)"
+      if (pos.status === "ON_TRIP" || pos.status === "DISPATCHED") statusColor = "var(--color-warning)"
+      if (pos.status === "ON_SCENE" || pos.status === "TRANSPORTING") statusColor = "var(--color-danger)"
+      if (pos.status === "MAINTENANCE" || pos.status === "OFF_DUTY") statusColor = "var(--color-text-muted)"
       const icon = L.divIcon({
         className: "marker-ambulance",
         html: `<div style="background:var(--color-bg-secondary); border:3px solid ${statusColor}; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 3px 10px rgba(0,0,0,0.4); color:var(--color-text-primary);">🚑</div>`,
         iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14],
       })
+      const popupHtml = `
+        <div class="map-popup">
+          <div class="map-popup__num" style="color:${statusColor}">${amb?.registration_no ?? id}</div>
+          <div class="map-popup__tags">
+            <span>${amb?.ambulance_type ?? "—"}</span> · <span>${pos.status?.replace(/_/g, " ")}</span>
+          </div>
+          <div class="map-popup__desc" style="margin-top:4px; line-height:1.7">
+            📍 ${amb?.district ?? "—"}<br/>
+            ⚡ ${amb?.speed_kmph != null ? amb.speed_kmph.toFixed(1) + " km/h" : "—"}<br/>
+            🔌 ${amb?.device_id ?? "—"}
+          </div>
+        </div>`
       if (markersRef.current.ambulances[id]) {
         markersRef.current.ambulances[id].setLatLng([pos.lat, pos.lon])
         markersRef.current.ambulances[id].setIcon(icon)
       } else {
         const m = L.marker([pos.lat, pos.lon], { icon, zIndexOffset: 500 }).addTo(map)
+        m.bindPopup(popupHtml)
         markersRef.current.ambulances[id] = m
       }
     })
-  }, [positions, mapStore.showAmbulances, mapReady])
+  }, [positions, ambulances, mapStore.showAmbulances, mapReady])
 
   // ── Hospitals (filtered) ────────────────────────────────────────────────────
   useEffect(() => {
