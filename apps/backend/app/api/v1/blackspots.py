@@ -14,8 +14,17 @@ class BlackSpotCreate(BaseModel):
     latitude: float
     longitude: float
     district: str
-    name: Optional[str] = None
+    police_station: Optional[str] = None
+    location: Optional[str] = None
+    priority: Optional[str] = None
     road_name: Optional[str] = None
+    road_number: Optional[str] = None
+    road_type: Optional[str] = None
+    road_length: Optional[str] = None
+    start_latitude: Optional[float] = None
+    start_longitude: Optional[float] = None
+    end_latitude: Optional[float] = None
+    end_longitude: Optional[float] = None
     incident_count: int = 0
     fatality_rate: Optional[float] = None
     accidents_per_year: int = 0
@@ -26,16 +35,25 @@ class BlackSpotCreate(BaseModel):
 def serialize_bs(bs) -> dict:
     return {
         "id": str(bs.id),
-        "name": bs.name,
+        "district": bs.district,
+        "police_station": bs.police_station,
+        "location": bs.location,
+        "priority": bs.priority,
+        "road_name": bs.road_name,
+        "road_number": bs.road_number,
+        "road_type": bs.road_type,
+        "road_length": bs.road_length,
         "latitude": bs.latitude,
         "longitude": bs.longitude,
-        "district": bs.district,
-        "road_name": bs.road_name,
+        "start_latitude": bs.start_latitude,
+        "start_longitude": bs.start_longitude,
+        "end_latitude": bs.end_latitude,
+        "end_longitude": bs.end_longitude,
         "incident_count": bs.incident_count,
         "fatality_rate": bs.fatality_rate,
         "accidents_per_year": bs.accidents_per_year,
         "risk_score": bs.risk_score,
-        "severity": bs.severity,
+        "severity": bs.severity.value if bs.severity else None,
         "description": bs.description,
         "created_at": bs.created_at.isoformat() if bs.created_at else None,
     }

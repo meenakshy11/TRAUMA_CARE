@@ -1,0 +1,710 @@
+{
+  "title": "Kerala Black Spots",
+  "total_records": 32,
+  "black_spots": [
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Thiruvallam to Kovalam",
+      "priority": "1st",
+      "road": {
+        "name": "Thiruvananthapuram - Vizhinjam Road",
+        "number": "MDR",
+        "type": "OR",
+        "length": "5 KM"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.441208,
+          "longitude": 76.954703
+        },
+        "ending_point": {
+          "latitude": 8.399189,
+          "longitude": 76.981818
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Karunagappally",
+      "location": "Kannetti to Karunagappally Jn.",
+      "priority": "1st",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.03995,
+          "longitude": 76.539956
+        },
+        "ending_point": {
+          "latitude": 9.055515,
+          "longitude": 76.535365
+        }
+      }
+    },
+    {
+      "district": "Pathanamthitta",
+      "police_station": "Pandalam",
+      "location": "Pandalam Medical Mission Jn to Pandalam Town",
+      "priority": "1st",
+      "road": {
+        "name": "MC Road (Main-Central Road)",
+        "number": "SH-1",
+        "type": "SH",
+        "length": "500 m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.218277,
+          "longitude": 76.680105
+        },
+        "ending_point": {
+          "latitude": 9.22507,
+          "longitude": 76.67848
+        }
+      }
+    },
+    {
+      "district": "Pathanamthitta",
+      "police_station": "Adoor",
+      "location": "Adoor Central Toll to Parthasarathi Temple",
+      "priority": "1st",
+      "road": {
+        "name": "MC Road (Main-Central Road)",
+        "number": "SH-1",
+        "type": "SH",
+        "length": "500 m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.152805,
+          "longitude": 76.735811
+        },
+        "ending_point": {
+          "latitude": 9.155252,
+          "longitude": 76.732436
+        }
+      }
+    },
+    {
+      "district": "Alappuzha",
+      "police_station": "Aroor",
+      "location": "Aroor Bypass to Aroor Temple",
+      "priority": "1st",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.874638,
+          "longitude": 76.304274
+        },
+        "ending_point": {
+          "latitude": 9.867634,
+          "longitude": 76.305165
+        }
+      }
+    },
+    {
+      "district": "Alappuzha",
+      "police_station": "Haripad",
+      "location": "Karuvatta - Vazhiyambalam",
+      "priority": "1st",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.315977,
+          "longitude": 76.42767
+        },
+        "ending_point": {
+          "latitude": 9.318889,
+          "longitude": 76.424054
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "Traffic PS",
+      "location": "Pattom to Plamoodu",
+      "priority": "2nd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.518554,
+          "longitude": 76.94256
+        },
+        "ending_point": {
+          "latitude": 8.51405,
+          "longitude": 76.946074
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Kottiyam",
+      "location": "Kottiyam Jn to Parakulam",
+      "priority": "2nd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.865956,
+          "longitude": 76.670856
+        },
+        "ending_point": {
+          "latitude": 8.866233,
+          "longitude": 76.663278
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Sakthikulangara",
+      "location": "Kavanadu to Kappithans",
+      "priority": "2nd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.919008,
+          "longitude": 76.558982
+        },
+        "ending_point": {
+          "latitude": 8.926851,
+          "longitude": 76.552598
+        }
+      }
+    },
+    {
+      "district": "Pathanamthitta",
+      "police_station": "Pandalam",
+      "location": "Kurampala to Paranthal",
+      "priority": "2nd",
+      "road": {
+        "name": "MC Road (Main-Central Road)",
+        "number": "SH-1",
+        "type": "SH",
+        "length": "500 m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.198246,
+          "longitude": 76.697015
+        },
+        "ending_point": {
+          "latitude": 9.189939,
+          "longitude": 76.705733
+        }
+      }
+    },
+    {
+      "district": "Kannur",
+      "police_station": "Valapattanam",
+      "location": "Highway Jn to Valapattanam Bridge",
+      "priority": "2nd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 11.91741,
+          "longitude": 75.357001
+        },
+        "ending_point": {
+          "latitude": 11.935782,
+          "longitude": 75.353446
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Ananthapuri to Chakkai",
+      "priority": "3rd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.486712,
+          "longitude": 76.927492
+        },
+        "ending_point": {
+          "latitude": 8.488943,
+          "longitude": 76.925489
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Parippally",
+      "location": "Parippally Jn to Mukkada",
+      "priority": "3rd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.812391,
+          "longitude": 76.758808
+        },
+        "ending_point": {
+          "latitude": 8.807008,
+          "longitude": 76.761835
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Karunagappally",
+      "location": "Karunagappally HS Jn and THQ Jn.",
+      "priority": "3rd",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.059209,
+          "longitude": 76.535619
+        },
+        "ending_point": {
+          "latitude": 9.063382,
+          "longitude": 76.534815
+        }
+      }
+    },
+    {
+      "district": "Pathanamthitta",
+      "police_station": "Pathanamthitta",
+      "location": "Omalloor Jn to Market Jn",
+      "priority": "3rd",
+      "road": {
+        "name": "Kaipattoor-Pathanamthitta Road",
+        "number": "MDR",
+        "type": "OR",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.250767,
+          "longitude": 76.758492
+        },
+        "ending_point": {
+          "latitude": 9.24015,
+          "longitude": 76.755382
+        }
+      }
+    },
+    {
+      "district": "Ernakulam",
+      "police_station": "Aluva",
+      "location": "Aluva Bypass Jn - Bank Jn",
+      "priority": "3rd",
+      "road": {
+        "name": "Aluva - Munnar Road (SH-16)",
+        "number": "SH-16",
+        "type": "SH",
+        "length": "500m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 10.110768,
+          "longitude": 76.348866
+        },
+        "ending_point": {
+          "latitude": 10.112012,
+          "longitude": 76.352337
+        }
+      }
+    },
+    {
+      "district": "Ernakulam",
+      "police_station": "City Traffic",
+      "location": "Chembumukku - Vazhakkala",
+      "priority": "3rd",
+      "road": {
+        "name": "Palarivattom Kumarapuram road (SH-41)",
+        "number": "SH-41",
+        "type": "SH",
+        "length": "660m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 10.011515,
+          "longitude": 76.322242
+        },
+        "ending_point": {
+          "latitude": 10.015833,
+          "longitude": 76.341958
+        }
+      }
+    },
+    {
+      "district": "Ernakulam",
+      "police_station": "City Traffic",
+      "location": "AR Camp - Menaka",
+      "priority": "3rd",
+      "road": {
+        "name": "Shanmugham road",
+        "number": "MDR",
+        "type": "OR",
+        "length": "500m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.98093,
+          "longitude": 76.275515
+        },
+        "ending_point": {
+          "latitude": 9.977928,
+          "longitude": 76.27696
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Vellayambalam to Kowdiar",
+      "priority": "4th",
+      "road": {
+        "name": "Thiruvananthapuram - Thenmala road",
+        "number": "SH-2",
+        "type": "SH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.511732,
+          "longitude": 76.962338
+        },
+        "ending_point": {
+          "latitude": 8.522233,
+          "longitude": 76.960565
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "Traffic PS",
+      "location": "Sreekaryam to Pangapara",
+      "priority": "4th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.548794,
+          "longitude": 76.917229
+        },
+        "ending_point": {
+          "latitude": 8.550935,
+          "longitude": 76.911028
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Kesavadasapuram to Nalanchira",
+      "priority": "4th",
+      "road": {
+        "name": "MC Road (Main-Central Road)",
+        "number": "SH-1",
+        "type": "SH",
+        "length": "500 m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.529813,
+          "longitude": 76.938573
+        },
+        "ending_point": {
+          "latitude": 8.542803,
+          "longitude": 76.942
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Kowdiar to Ambalamukku",
+      "priority": "4th",
+      "road": {
+        "name": "Thiruvananthapuram - Thenmala road",
+        "number": "SH-2",
+        "type": "SH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.522227,
+          "longitude": 76.960551
+        },
+        "ending_point": {
+          "latitude": 8.531654,
+          "longitude": 76.961655
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "East Fort to Attakulangara",
+      "priority": "4th",
+      "road": {
+        "name": "MG Road",
+        "number": "SH",
+        "type": "SH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.479386,
+          "longitude": 76.94747
+        },
+        "ending_point": {
+          "latitude": 8.479413,
+          "longitude": 76.947472
+        }
+      }
+    },
+    {
+      "district": "Pathanamthitta",
+      "police_station": "Pandalam",
+      "location": "Kulanada Medical Trust to Kulanada Jn Curve",
+      "priority": "4th",
+      "road": {
+        "name": "MC Road (Main-Central Road)",
+        "number": "SH-1",
+        "type": "SH",
+        "length": "300 m"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.240588,
+          "longitude": 76.67277
+        },
+        "ending_point": {
+          "latitude": 9.244368,
+          "longitude": 76.67144
+        }
+      }
+    },
+    {
+      "district": "Alappuzha",
+      "police_station": "Mannancherry",
+      "location": "Valavanadu - Colgate Jn",
+      "priority": "4th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.590342,
+          "longitude": 76.327741
+        },
+        "ending_point": {
+          "latitude": 9.590336,
+          "longitude": 76.327748
+        }
+      }
+    },
+    {
+      "district": "Thiruvananthapuram",
+      "police_station": "City Traffic Police Station",
+      "location": "Venpalavattom to Toll Booth",
+      "priority": "5th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.509957,
+          "longitude": 76.903931
+        },
+        "ending_point": {
+          "latitude": 8.498472,
+          "longitude": 76.957287
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Chavara",
+      "location": "Sangaramangalam to Titanium",
+      "priority": "5th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.867784,
+          "longitude": 76.802488
+        },
+        "ending_point": {
+          "latitude": 9.001229,
+          "longitude": 76.535159
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Chathannur",
+      "location": "Seematty Jn. to Karamkodu",
+      "priority": "5th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.845461,
+          "longitude": 76.751492
+        },
+        "ending_point": {
+          "latitude": 8.845535,
+          "longitude": 76.734454
+        }
+      }
+    },
+    {
+      "district": "Kollam",
+      "police_station": "Kollam Traffic",
+      "location": "Polayathodu to Kappalandimukku",
+      "priority": "5th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 8.879898,
+          "longitude": 76.605108
+        },
+        "ending_point": {
+          "latitude": 8.879875,
+          "longitude": 76.605282
+        }
+      }
+    },
+    {
+      "district": "Kottayam",
+      "police_station": "Manarcad",
+      "location": "Manarcad Jn. - Perumanoorkulam",
+      "priority": "5th",
+      "road": {
+        "name": "Manarcadu - Kidangoor road",
+        "number": "MDR",
+        "type": "OR",
+        "length": "500 M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 9.587933,
+          "longitude": 76.582259
+        },
+        "ending_point": {
+          "latitude": 9.593103,
+          "longitude": 76.584119
+        }
+      }
+    },
+    {
+      "district": "Ernakulam",
+      "police_station": "City Traffic East PS",
+      "location": "Chittethukara to Rajagiri Bus Stop",
+      "priority": "5th",
+      "road": {
+        "name": "Palarivattom Kumarapuram road (SH-41)",
+        "number": "SH-41",
+        "type": "SH",
+        "length": "500 Mtr"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 10.001598,
+          "longitude": 76.349507
+        },
+        "ending_point": {
+          "latitude": 9.995548,
+          "longitude": 76.351605
+        }
+      }
+    },
+    {
+      "district": "Kannur",
+      "police_station": "Valapattanam",
+      "location": "Pappinisseri Chungam to Velapuram",
+      "priority": "5th",
+      "road": {
+        "name": "Panvel - Kanyakumari Road",
+        "number": "NH-66",
+        "type": "NH",
+        "length": "500M"
+      },
+      "coordinates": {
+        "starting_point": {
+          "latitude": 11.942665,
+          "longitude": 75.353836
+        },
+        "ending_point": {
+          "latitude": 11.952218,
+          "longitude": 75.355323
+        }
+      }
+    }
+  ]
+}

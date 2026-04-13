@@ -11,7 +11,7 @@ async def list_blackspots(db: AsyncSession, district: Optional[str] = None) -> L
     query = select(BlackSpot)
     if district:
         query = query.where(BlackSpot.district == district)
-    query = query.order_by(BlackSpot.risk_score.desc())
+    query = query.order_by(BlackSpot.priority.asc().nullslast(), BlackSpot.risk_score.desc())
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -21,8 +21,17 @@ async def create_blackspot(
     latitude: float,
     longitude: float,
     district: str,
-    name: Optional[str] = None,
+    police_station: Optional[str] = None,
+    location: Optional[str] = None,
+    priority: Optional[str] = None,
     road_name: Optional[str] = None,
+    road_number: Optional[str] = None,
+    road_type: Optional[str] = None,
+    road_length: Optional[str] = None,
+    start_latitude: Optional[float] = None,
+    start_longitude: Optional[float] = None,
+    end_latitude: Optional[float] = None,
+    end_longitude: Optional[float] = None,
     incident_count: int = 0,
     fatality_rate: Optional[float] = None,
     accidents_per_year: int = 0,
@@ -34,8 +43,17 @@ async def create_blackspot(
         latitude=latitude,
         longitude=longitude,
         district=district,
-        name=name,
+        police_station=police_station,
+        location=location,
+        priority=priority,
         road_name=road_name,
+        road_number=road_number,
+        road_type=road_type,
+        road_length=road_length,
+        start_latitude=start_latitude,
+        start_longitude=start_longitude,
+        end_latitude=end_latitude,
+        end_longitude=end_longitude,
         incident_count=incident_count,
         fatality_rate=fatality_rate,
         accidents_per_year=accidents_per_year,

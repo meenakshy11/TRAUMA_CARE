@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from app.config import settings
 from app.api.v1.router import api_router
@@ -36,14 +37,42 @@ app = FastAPI(
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        *settings.CORS_ORIGINS,
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 app.include_router(ws_router)
+
+
+_CORS_ORIGINS = {
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+}
+
+
+@app.exception_handler(Exception)
+async def _cors_safe_exception_handler(request: Request, exc: Exception):
+    """Re-raise after injecting CORS headers so browsers don't mask real errors."""
+    origin = request.headers.get("origin", "")
+    headers = {}
+    if origin in _CORS_ORIGINS or any(o in origin for o in _CORS_ORIGINS):
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
+    status = getattr(exc, "status_code", 500)
+    detail = getattr(exc, "detail", str(exc))
+    return JSONResponse({"detail": detail}, status_code=status, headers=headers)
 
 
 @app.get("/health")
