@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+﻿from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 from typing import Optional
@@ -62,6 +62,8 @@ async def list_all(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    if current_user.role.value == "GOVERNMENT" and getattr(current_user, "district", None) and not district:
+        district = current_user.district
     ambulances = await list_ambulances(db, status=status, district=district)
     return [serialize_ambulance(a) for a in ambulances]
 
@@ -160,3 +162,5 @@ async def create_ambulance(
     await db.commit()
     await db.refresh(amb)
     return serialize_ambulance(amb)
+
+

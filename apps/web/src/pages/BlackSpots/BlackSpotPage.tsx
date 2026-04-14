@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+import { useEffect, useState } from "react"
+import { useDistrictStore } from "../../store/districtStore"
+import { blackspotsApi } from "../../api/index"
+import toast from "react-hot-toast"
+
+export function BlackSpotPage() {
+  const { selectedDistrict } = useDistrictStore()
+  const [spots, setSpots] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState("ALL")
+
+  useEffect(() => { 
+    blackspotsApi.getAll({ district: selectedDistrict || undefined }).then(r => { 
+      setSpots(Array.isArray(r.data) ? r.data : [])
+      setLoading(false) 
+    }).catch(() => setLoading(false)) 
+  }, [selectedDistrict])
+=======
 import React, { useEffect, useState } from "react"
 import { blackspotsApi } from "../../api/index"
 import toast from "react-hot-toast"
@@ -54,6 +73,7 @@ export function BlackSpotPage() {
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [])
+>>>>>>> 67e950e67bec4a98f5948ba02ef68ba8e76fe875
 
   /* ── Derived filter lists ──────────────────────────────────────────────── */
   const districts  = ["ALL", ...Array.from(new Set(spots.map((s: any) => s.district))).sort()]
