@@ -2,19 +2,39 @@ import json
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.auth_service import create_user, get_user_by_email
-from app.core.constants import UserRole, TraumaLevel, AmbulanceType, AmbulanceStatus, BlackSpotSeverity
+from app.core.constants import (
+    UserRole, TraumaLevel, AmbulanceType, AmbulanceStatus,
+    BlackSpotSeverity, IncidentStatus, IncidentSeverity, AccidentType,
+)
 from app.models.hospital import Hospital, HospitalResource
 from app.models.ambulance import Ambulance, StagingStation
 from app.models.blackspot import BlackSpot
+from app.models.incident import Incident
 
-# Path: apps/backend/app/db/init_db.py  ->  JSON files sit at apps/backend/
-HOSPITALS_JSON    = Path(__file__).resolve().parent.parent.parent / "kerala_hospitals_geocoded.json"
-AMBULANCES_JSON   = Path(__file__).resolve().parent.parent.parent / "kerala_ambulances_50.json"
+# JSON files sit at apps/backend/
+_BACKEND_DIR   = Path(__file__).resolve().parent.parent.parent
+HOSPITALS_JSON = _BACKEND_DIR / "kerala_hospitals_geocoded.json"
+AMBULANCES_JSON= _BACKEND_DIR / "kerala_ambulances_50.json"
+BLACKSPOTS_JSON= _BACKEND_DIR / "kerala_blackspots.json"
 
 _TRAUMA_LEVEL_MAP = {
     "LEVEL_1": TraumaLevel.LEVEL_1,
     "LEVEL_2": TraumaLevel.LEVEL_2,
     "LEVEL_3": TraumaLevel.LEVEL_3,
+}
+
+_SEVERITY_MAP = {
+    "1st": BlackSpotSeverity.HIGH,
+    "2nd": BlackSpotSeverity.HIGH,
+    "3rd": BlackSpotSeverity.MEDIUM,
+    "4th": BlackSpotSeverity.LOW,
+    "5th": BlackSpotSeverity.LOW,
+}
+
+_RISK_SCORE_MAP = {
+    BlackSpotSeverity.HIGH:   9.0,
+    BlackSpotSeverity.MEDIUM: 6.0,
+    BlackSpotSeverity.LOW:    3.5,
 }
 
 
@@ -40,8 +60,6 @@ async def init_db(db: AsyncSession):
         db, email="gov@trauma.kerala.gov.in",
         password="Gov@1234", full_name="Anitha Nair", role=UserRole.GOVERNMENT,
     )
-
-    # ── Demo accounts (shown on the login page quick-login buttons) ────────────
     await create_user(
         db, email="dispatcher@trauma.demo",
         password="Demo@1234", full_name="Arun Krishnan", role=UserRole.DISPATCHER,
@@ -55,12 +73,9 @@ async def init_db(db: AsyncSession):
         password="Gov@1234", full_name="Suresh Kumar IAS", role=UserRole.GOVERNMENT,
     )
 
-    # ── Hospitals from JSON ────────────────────────────────────────────────────
+    # ── Hospitals ──────────────────────────────────────────────────────────────
     if not HOSPITALS_JSON.exists():
-        raise FileNotFoundError(
-            f"Hospital seed file not found at {HOSPITALS_JSON}. "
-            "Place kerala_hospitals_geocoded.json in apps/backend/"
-        )
+        raise FileNotFoundError(f"Hospital seed file not found at {HOSPITALS_JSON}.")
 
     with open(HOSPITALS_JSON, "r", encoding="utf-8") as f:
         hospital_records = json.load(f)
@@ -105,14 +120,12 @@ async def init_db(db: AsyncSession):
         if first_hospital_id is None:
             first_hospital_id = h.id
 
-    # Hospital staff users tied to first hospital
     if first_hospital_id:
         await create_user(
             db, email="hospital@trauma.kerala.gov.in",
             password="Hosp@1234", full_name="Dr. Suresh Pillai",
             role=UserRole.HOSPITAL_STAFF, hospital_id=first_hospital_id,
         )
-        # Demo account shown on login page
         await create_user(
             db, email="hospital@trauma.demo",
             password="Hosp@1234", full_name="Dr. Sreeja Nair",
@@ -139,7 +152,7 @@ async def init_db(db: AsyncSession):
         await db.flush()
         station_objs.append(s)
 
-    # ── Ambulances from JSON ──────────────────────────────────────────────────
+    # ── Ambulances ────────────────────────────────────────────────────────────
     if not AMBULANCES_JSON.exists():
         print(f"  WARNING: {AMBULANCES_JSON} not found — skipping ambulance seed")
     else:
@@ -149,7 +162,6 @@ async def init_db(db: AsyncSession):
         print(f"  Seeding {len(ambulance_records)} ambulances from JSON...")
 
         for rec in ambulance_records:
-            # Map staging_station_id string (e.g. "stg-003") to one of the 5 real station objects
             stg_str = rec.get("staging_station_id", "")
             if stg_str and stg_str.startswith("stg-"):
                 try:
@@ -160,13 +172,11 @@ async def init_db(db: AsyncSession):
             else:
                 stg_id = None
 
-            # Parse status — fall back to AVAILABLE if unrecognised
             try:
                 status = AmbulanceStatus(rec.get("status", "AVAILABLE"))
             except ValueError:
                 status = AmbulanceStatus.AVAILABLE
 
-            # Parse type — fall back to BLS if unrecognised
             try:
                 amb_type = AmbulanceType(rec.get("ambulance_type", "BLS"))
             except ValueError:
@@ -186,30 +196,161 @@ async def init_db(db: AsyncSession):
             )
             db.add(a)
 
-    # ── Black Spots ────────────────────────────────────────────────────────────
-    # Only seed placeholder spots here; the real 32 Kerala spots are seeded via
-    # seed_blackspots.py / db_setup.py which uses kerala_blackspots.json.
-    # This block is intentionally left minimal so init_db stays idempotent.
-    placeholder_spots = [
-        dict(district="Thiruvananthapuram", location="District Road THI-25",
-             road_name="District Road THI-25", road_number="MDR", road_type="OR",
-             priority="3rd", latitude=8.5268, longitude=76.7999,
-             incident_count=30, fatality_rate=29.0, accidents_per_year=30,
-             severity=BlackSpotSeverity.HIGH, risk_score=5.9),
-        dict(district="Kottayam", location="MC Road Kottayam",
-             road_name="MC Road (NH 183)", road_number="NH-183", road_type="NH",
-             priority="3rd", latitude=9.9312, longitude=76.2673,
-             incident_count=47, fatality_rate=15.0, accidents_per_year=47,
-             severity=BlackSpotSeverity.HIGH, risk_score=6.2),
-        dict(district="Kozhikode", location="Calicut Beach Road",
-             road_name="Beach Road", road_number="MDR", road_type="OR",
-             priority="4th", latitude=11.2588, longitude=75.7804,
-             incident_count=28, fatality_rate=10.0, accidents_per_year=28,
-             severity=BlackSpotSeverity.MEDIUM, risk_score=3.8),
+    # ── Black Spots — all 32 from kerala_blackspots.json ──────────────────────
+    if not BLACKSPOTS_JSON.exists():
+        print(f"  WARNING: {BLACKSPOTS_JSON} not found — skipping blackspot seed")
+    else:
+        with open(BLACKSPOTS_JSON, "r", encoding="utf-8") as f:
+            bs_payload = json.load(f)
+
+        bs_records = (
+            bs_payload.get("black_spots", bs_payload)
+            if isinstance(bs_payload, dict)
+            else bs_payload
+        )
+        print(f"  Seeding {len(bs_records)} black spots from JSON...")
+
+        for rec in bs_records:
+            coords   = rec.get("coordinates", {})
+            start_pt = coords.get("starting_point", {})
+            end_pt   = coords.get("ending_point", {})
+
+            if start_pt and end_pt:
+                mid_lat = round((start_pt["latitude"]  + end_pt["latitude"])  / 2, 6)
+                mid_lon = round((start_pt["longitude"] + end_pt["longitude"]) / 2, 6)
+            else:
+                mid_lat = rec.get("latitude", 10.0)
+                mid_lon = rec.get("longitude", 76.0)
+
+            road     = rec.get("road", {})
+            priority = rec.get("priority", "").strip()
+            severity = _SEVERITY_MAP.get(priority)
+
+            bs = BlackSpot(
+                district=rec["district"],
+                police_station=rec.get("police_station"),
+                location=rec.get("location"),
+                priority=priority,
+                road_name=road.get("name"),
+                road_number=road.get("number"),
+                road_type=road.get("type"),
+                road_length=road.get("length"),
+                latitude=mid_lat,
+                longitude=mid_lon,
+                start_latitude=start_pt.get("latitude"),
+                start_longitude=start_pt.get("longitude"),
+                end_latitude=end_pt.get("latitude"),
+                end_longitude=end_pt.get("longitude"),
+                severity=severity,
+                risk_score=_RISK_SCORE_MAP.get(severity, 0.0) if severity else 0.0,
+                incident_count=rec.get("incident_count", 0),
+                fatality_rate=rec.get("fatality_rate"),
+                accidents_per_year=rec.get("accidents_per_year", 0),
+                description=(
+                    f"{rec.get('location', '')} — "
+                    f"{road.get('name', '')} ({road.get('number', '')})"
+                ),
+            )
+            db.add(bs)
+
+    # ── Demo Incidents ─────────────────────────────────────────────────────────
+    print("  Seeding demo incidents...")
+    demo_incidents = [
+        dict(incident_number="INC-2024-001", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.CRITICAL, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=8.5241, longitude=76.9366, district="Thiruvananthapuram",
+             address_text="NH 66, Kazhakkoottam Bypass, Thiruvananthapuram",
+             patient_count=3, golden_hour_met=True,
+             description="Multi-vehicle collision on NH 66 bypass"),
+        dict(incident_number="INC-2024-002", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.SEVERE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=9.9312, longitude=76.2673, district="Kottayam",
+             address_text="MC Road near Kottayam junction",
+             patient_count=2, golden_hour_met=True,
+             description="Truck-bike collision on MC Road"),
+        dict(incident_number="INC-2024-003", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.MODERATE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=11.2588, longitude=75.7804, district="Kozhikode",
+             address_text="Beach Road, Calicut",
+             patient_count=1, golden_hour_met=True,
+             description="Single vehicle skid on Beach Road"),
+        dict(incident_number="INC-2024-004", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.CRITICAL, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=10.5276, longitude=76.2144, district="Thrissur",
+             address_text="NH 544, Thrissur bypass",
+             patient_count=4, golden_hour_met=False,
+             description="Bus accident with multiple casualties on Thrissur bypass"),
+        dict(incident_number="INC-2024-005", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.SEVERE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=11.8745, longitude=75.3704, district="Kannur",
+             address_text="Kannur-Thalassery Road",
+             patient_count=2, golden_hour_met=True,
+             description="Head-on collision near Thalassery junction"),
+        dict(incident_number="INC-2024-006", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.MINOR, accident_type=AccidentType.FALL,
+             latitude=9.4981, longitude=76.3388, district="Alappuzha",
+             address_text="Alappuzha boat jetty area",
+             patient_count=1, golden_hour_met=True,
+             description="Fall from boat landing steps"),
+        dict(incident_number="INC-2024-007", status=IncidentStatus.HOSPITAL_ARRIVED,
+             severity=IncidentSeverity.CRITICAL, accident_type=AccidentType.CARDIAC,
+             latitude=10.0159, longitude=76.3419, district="Ernakulam",
+             address_text="MG Road, Kochi",
+             patient_count=1, golden_hour_met=True,
+             description="Cardiac arrest at MG Road junction"),
+        dict(incident_number="INC-2024-008", status=IncidentStatus.TRANSPORTING,
+             severity=IncidentSeverity.SEVERE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=8.8932, longitude=76.6141, district="Kollam",
+             address_text="Kollam bypass NH 66",
+             patient_count=2, golden_hour_met=None,
+             description="Two-wheeler collision on NH 66 Kollam bypass"),
+        dict(incident_number="INC-2024-009", status=IncidentStatus.ON_SCENE,
+             severity=IncidentSeverity.MODERATE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=11.6854, longitude=76.1320, district="Wayanad",
+             address_text="Wayanad Ghat Road, Kalpetta",
+             patient_count=1, golden_hour_met=None,
+             description="Ghat road accident near hairpin bend"),
+        dict(incident_number="INC-2024-010", status=IncidentStatus.DISPATCHED,
+             severity=IncidentSeverity.SEVERE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=10.7867, longitude=76.6548, district="Palakkad",
+             address_text="Palakkad-Coimbatore NH 544",
+             patient_count=3, golden_hour_met=None,
+             description="Lorry rollover on NH 544 near Palakkad"),
+        dict(incident_number="INC-2024-011", status=IncidentStatus.REPORTED,
+             severity=IncidentSeverity.CRITICAL, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=9.5916, longitude=76.5222, district="Pathanamthitta",
+             address_text="Pathanamthitta-Ranni Road",
+             patient_count=2, golden_hour_met=None,
+             description="Vehicle fell into roadside canal"),
+        dict(incident_number="INC-2024-012", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.MODERATE, accident_type=AccidentType.BURNS,
+             latitude=9.2648, longitude=76.7870, district="Pathanamthitta",
+             address_text="Thiruvalla Town",
+             patient_count=1, golden_hour_met=True,
+             description="Kitchen fire burns victim"),
+        dict(incident_number="INC-2024-013", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.SEVERE, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=12.4996, longitude=74.9869, district="Kasaragod",
+             address_text="Kasaragod NH 66 near Permude",
+             patient_count=3, golden_hour_met=False,
+             description="Tanker truck collision — delayed response due to terrain"),
+        dict(incident_number="INC-2024-014", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.MINOR, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=11.1271, longitude=76.0671, district="Malappuram",
+             address_text="Malappuram bypass road",
+             patient_count=1, golden_hour_met=True,
+             description="Minor skid injury on bypass"),
+        dict(incident_number="INC-2024-015", status=IncidentStatus.CLOSED,
+             severity=IncidentSeverity.CRITICAL, accident_type=AccidentType.ROAD_ACCIDENT,
+             latitude=8.7642, longitude=76.7274, district="Thiruvananthapuram",
+             address_text="Attingal-Chirayinkeezhu stretch, NH 66",
+             patient_count=5, is_mci=True, golden_hour_met=False,
+             description="MCI — bus rollover with 5 critical patients"),
     ]
-    for bd in placeholder_spots:
-        bs = BlackSpot(**bd)
-        db.add(bs)
+
+    for inc_data in demo_incidents:
+        inc = Incident(reported_by_id=admin.id, **inc_data)
+        db.add(inc)
 
     await db.flush()
-    print("Seed data inserted successfully.")
+    print("Seed data inserted successfully.")

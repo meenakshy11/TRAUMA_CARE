@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { analyticsApi } from "../../api/index"
 import { useDistrictStore } from "../../store/districtStore"
 import {
@@ -8,7 +8,7 @@ import {
 } from "recharts"
 import { RoadSafetyPanel } from "./components/RoadSafetyPanel"
 
-// â”€â”€â”€ Chart palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Chart palette -----------------------------------------------------------
 const CHART_COLORS = {
   grid:   "var(--color-border)",
   text:   "var(--color-text-muted)",
@@ -17,7 +17,7 @@ const CHART_COLORS = {
   orange: "#f59e0b",
 }
 
-// â”€â”€â”€ Custom Tooltip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Custom Tooltip ----------------------------------------------------------
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
@@ -42,7 +42,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-// â”€â”€â”€ Section Divider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Section Divider ---------------------------------------------------------
 const SectionDivider = ({ title, sub, badge }: { title: string; sub: string; badge?: string }) => (
   <div style={{
     display: "flex",
@@ -84,7 +84,7 @@ const SectionDivider = ({ title, sub, badge }: { title: string; sub: string; bad
   </div>
 )
 
-// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Main Page ---------------------------------------------------------------
 export function AnalyticsDashboardPage() {
   const { selectedDistrict } = useDistrictStore()
   const [kpi, setKpi]           = useState<any>(null)
@@ -116,14 +116,14 @@ export function AnalyticsDashboardPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
 
-      {/* â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* -- Page Header ------------------------------------------------------- */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--color-text-primary)", letterSpacing: "-0.03em" }}>
             Analytics &amp; Performance
           </h1>
           <p style={{ color: "var(--color-text-secondary)", fontSize: 13, margin: "4px 0 0" }}>
-            Golden Hour compliance Â· Response metrics Â· Road Safety Intelligence â€” Kerala
+            Golden Hour compliance &middot; Response metrics &middot; Road Safety Intelligence &mdash; Kerala
           </p>
         </div>
 
@@ -135,8 +135,8 @@ export function AnalyticsDashboardPage() {
           borderRadius: "var(--radius-sm)",
         }}>
           {([
-            { id: "performance",  label: "ðŸ“Š Performance"     },
-            { id: "road-safety",  label: "ðŸš— Road Safety"     },
+            { id: "performance",  label: "Performance"  },
+            { id: "road-safety",  label: "Road Safety"  },
           ] as const).map(s => (
             <button
               key={s.id}
@@ -160,9 +160,9 @@ export function AnalyticsDashboardPage() {
         </div>
       </div>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          SECTION A â€” Golden Hour & Performance
-      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* =====================================================================
+          SECTION A - Golden Hour & Performance
+      ===================================================================== */}
       {activeSection === "performance" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
 
@@ -221,7 +221,7 @@ export function AnalyticsDashboardPage() {
                 <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Last 6 months</div>
               </div>
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={liveTrendData} margin={{ top: 0, right: 10, bottom: 0, left: -10 }}>
+                <LineChart data={trendData} margin={{ top: 0, right: 10, bottom: 0, left: -10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
                   <XAxis dataKey="month" tick={{ fill: CHART_COLORS.text, fontSize: 11 }} axisLine={{ stroke: CHART_COLORS.grid }} tickLine={false} />
                   <YAxis tick={{ fill: CHART_COLORS.text, fontSize: 11 }} axisLine={false} tickLine={false} />
@@ -243,7 +243,7 @@ export function AnalyticsDashboardPage() {
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text-primary)" }}>
-                District Performance Matrix â€” All 14 Districts
+                District Performance Matrix &mdash; All 14 Districts
               </div>
               <span className="badge badge-muted">Live</span>
             </div>
@@ -290,32 +290,32 @@ export function AnalyticsDashboardPage() {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-          SECTION B â€” Road Safety Analytics Panel
-      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* =====================================================================
+          SECTION B - Road Safety Analytics Panel
+      ===================================================================== */}
       {activeSection === "road-safety" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
           {/* Section header banner */}
           <SectionDivider
             title="Road Safety Analytics Panel"
-            sub="Accident hotspots Â· Time patterns Â· Severity distribution across Kerala road network"
-            badge="âš ï¸ HIGH RISK ZONES ACTIVE"
+            sub="Accident hotspots &middot; Time patterns &middot; Severity distribution across Kerala road network"
+            badge="HIGH RISK ZONES ACTIVE"
           />
 
           {/* Stat strip */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
             {[
-              { label: "Total Accidents",  value: "242",  color: "#ef4444", sub: "Last 30 days",    icon: "ðŸ’¥" },
-              { label: "Fatalities",       value: "87",   color: "#f97316", sub: "Road accidents",  icon: "ðŸ’€" },
-              { label: "Black Spots",      value: "10",   color: "#f59e0b", sub: "Tracked zones",   icon: "ðŸ“" },
-              { label: "Peak Risk Hour",   value: "02â€“04 AM", color: "#6366f1", sub: "Night window", icon: "ðŸŒ™" },
+              { label: "Total Accidents",  value: "242",      color: "#ef4444", sub: "Last 30 days",   icon: "Accidents"    },
+              { label: "Fatalities",       value: "87",       color: "#f97316", sub: "Road accidents", icon: "Fatalities"   },
+              { label: "Black Spots",      value: "32",       color: "#f59e0b", sub: "Tracked zones",  icon: "Hotspots"     },
+              { label: "Peak Risk Hour",   value: "02-04 AM", color: "#6366f1", sub: "Night window",   icon: "Peak Time"    },
             ].map(c => (
               <div key={c.label} className="card" style={{
                 padding: "14px 18px",
                 borderTop: `3px solid ${c.color}`,
               }}>
-                <div style={{ fontSize: 20, marginBottom: 6 }}>{c.icon}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: c.color, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{c.icon}</div>
                 <div className="mono" style={{ fontSize: 28, fontWeight: 800, color: c.color, lineHeight: 1 }}>
                   {c.value}
                 </div>
@@ -336,5 +336,3 @@ export function AnalyticsDashboardPage() {
     </div>
   )
 }
-
-
