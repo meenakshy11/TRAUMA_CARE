@@ -1,23 +1,5 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react"
-import { useDistrictStore } from "../../store/districtStore"
-import { blackspotsApi } from "../../api/index"
-import toast from "react-hot-toast"
-
-export function BlackSpotPage() {
-  const { selectedDistrict } = useDistrictStore()
-  const [spots, setSpots] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState("ALL")
-
-  useEffect(() => { 
-    blackspotsApi.getAll({ district: selectedDistrict || undefined }).then(r => { 
-      setSpots(Array.isArray(r.data) ? r.data : [])
-      setLoading(false) 
-    }).catch(() => setLoading(false)) 
-  }, [selectedDistrict])
-=======
 import React, { useEffect, useState } from "react"
+import { useDistrictStore } from "../../store/districtStore"
 import { blackspotsApi } from "../../api/index"
 import toast from "react-hot-toast"
 
@@ -55,6 +37,7 @@ const fmtCoord = (v?: number | null) =>
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 export function BlackSpotPage() {
+  const { selectedDistrict } = useDistrictStore()
   const [spots, setSpots]               = useState<any[]>([])
   const [loading, setLoading]           = useState(true)
   const [filter, setFilter]             = useState("ALL")          // severity
@@ -64,7 +47,7 @@ export function BlackSpotPage() {
   const [expandedId, setExpandedId]     = useState<string | null>(null)
 
   useEffect(() => {
-    blackspotsApi.getAll().then(r => {
+    blackspotsApi.getAll({ district: selectedDistrict || undefined }).then(r => {
       const data = Array.isArray(r.data) ? r.data : []
       data.sort((a: any, b: any) =>
         (PRIORITY_ORDER[a.priority] ?? 99) - (PRIORITY_ORDER[b.priority] ?? 99)
@@ -72,8 +55,7 @@ export function BlackSpotPage() {
       setSpots(data)
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [])
->>>>>>> 67e950e67bec4a98f5948ba02ef68ba8e76fe875
+  }, [selectedDistrict])
 
   /* ── Derived filter lists ──────────────────────────────────────────────── */
   const districts  = ["ALL", ...Array.from(new Set(spots.map((s: any) => s.district))).sort()]
