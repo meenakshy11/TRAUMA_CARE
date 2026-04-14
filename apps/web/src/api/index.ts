@@ -133,6 +133,17 @@ export const analyticsApi = {
     if (DEMO) return { data: DEMO_KPI }
     return apiClient.get("/analytics/kpi", { params: { district } })
   },
+  getMonthlyTrends: async (district?: string) => {
+    if (DEMO) return { data: [
+      { month: "Oct", incidents: 156, golden_met: 118 },
+      { month: "Nov", incidents: 178, golden_met: 134 },
+      { month: "Dec", incidents: 201, golden_met: 149 },
+      { month: "Jan", incidents: 189, golden_met: 143 },
+      { month: "Feb", incidents: 212, golden_met: 165 },
+      { month: "Mar", incidents: 234, golden_met: 189 },
+    ] }
+    return apiClient.get("/analytics/monthly-trends", { params: { district } })
+  },
   getDistrictPerformance: async () => {
     if (DEMO) return { data: [
       { district: "Thiruvananthapuram", total_incidents: 245, golden_hour_met: 198, compliance_pct: 80.8 },

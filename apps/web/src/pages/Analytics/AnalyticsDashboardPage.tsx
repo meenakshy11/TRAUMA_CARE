@@ -89,30 +89,24 @@ export function AnalyticsDashboardPage() {
   const { selectedDistrict } = useDistrictStore()
   const [kpi, setKpi]           = useState<any>(null)
   const [districts, setDistricts] = useState<any[]>([])
+  const [trendData, setTrendData] = useState<any[]>([])
   const [activeSection, setActiveSection] = useState<"performance" | "road-safety">("performance")
 
   useEffect(() => {
     analyticsApi.getKPI(selectedDistrict || undefined).then(r => setKpi(r.data))
+    analyticsApi.getMonthlyTrends(selectedDistrict || undefined).then(r => setTrendData(Array.isArray(r.data) ? r.data : []))
     analyticsApi.getDistrictPerformance().then(r => {
       const data = Array.isArray(r.data) ? r.data : []
       setDistricts(selectedDistrict ? data.filter((d: any) => d.district === selectedDistrict) : data)
     })
   }, [selectedDistrict])
 
-  const trendData = [
-    { month: "Oct", incidents: 156, golden_met: 118 },
-    { month: "Nov", incidents: 178, golden_met: 134 },
-    { month: "Dec", incidents: 201, golden_met: 149 },
-    { month: "Jan", incidents: 189, golden_met: 143 },
-    { month: "Feb", incidents: 212, golden_met: 165 },
-    { month: "Mar", incidents: 234, golden_met: 189 },
-  ]
 
   const kpiCards = [
-    { label: "Golden Hour Compliance", value: `${kpi?.golden_hour_compliance_pct || 68}%`, color: "var(--color-warning)",       sub: "State-wide"       },
-    { label: "Avg Response Time",      value: `${Math.round((kpi?.avg_response_time_sec || 486) / 60)} min`, color: "var(--color-warning)", sub: "Dispatch to scene" },
-    { label: "Incidents Today",        value: kpi?.total_incidents_today || 142,  color: "var(--color-accent-blue)", sub: "All districts"    },
-    { label: "Ambulances Available",   value: kpi?.ambulances_available || 186,   color: "var(--color-accent-cyan)", sub: "Active fleet"     },
+    { label: "Golden Hour Compliance", value: `${kpi?.golden_hour_compliance_pct ?? 0}%`, color: "var(--color-warning)",       sub: "State-wide"       },
+    { label: "Avg Response Time",      value: kpi ? `${Math.round((kpi.avg_response_time_sec || 0) / 60)} min` : "— min", color: "var(--color-warning)", sub: "Dispatch to scene" },
+    { label: "Incidents Today",        value: kpi?.total_incidents_today ?? 0,  color: "var(--color-accent-blue)", sub: "All districts"    },
+    { label: "Ambulances Available",   value: kpi?.ambulances_available ?? 0,   color: "var(--color-accent-cyan)", sub: "Active fleet"     },
   ]
 
   const complianceColor  = (p: number) => p >= 75 ? "var(--color-success)"  : p >= 60 ? "var(--color-warning)"  : "var(--color-danger)"
@@ -227,7 +221,7 @@ export function AnalyticsDashboardPage() {
                 <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 2 }}>Last 6 months</div>
               </div>
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={trendData} margin={{ top: 0, right: 10, bottom: 0, left: -10 }}>
+                <LineChart data={liveTrendData} margin={{ top: 0, right: 10, bottom: 0, left: -10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
                   <XAxis dataKey="month" tick={{ fill: CHART_COLORS.text, fontSize: 11 }} axisLine={{ stroke: CHART_COLORS.grid }} tickLine={false} />
                   <YAxis tick={{ fill: CHART_COLORS.text, fontSize: 11 }} axisLine={false} tickLine={false} />
