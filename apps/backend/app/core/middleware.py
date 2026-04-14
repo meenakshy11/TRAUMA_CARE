@@ -11,5 +11,5 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         request.state.correlation_id = correlation_id
         response = await call_next(request)
         duration = round((time.time() - start) * 1000, 2)
-        print(f"[{correlation_id}] {request.method} {request.url.path} → {response.status_code} ({duration}ms)")
+        print(f"[{correlation_id}] {request.method} {request.url.path} -> {response.status_code} ({duration}ms)")
         return response

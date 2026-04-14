@@ -7,7 +7,7 @@ from app.models.hospital import Hospital, HospitalResource
 from app.models.ambulance import Ambulance, StagingStation
 from app.models.blackspot import BlackSpot
 
-# Path: apps/backend/app/db/init_db.py  →  JSON files sit at apps/backend/
+# Path: apps/backend/app/db/init_db.py  ->  JSON files sit at apps/backend/
 HOSPITALS_JSON    = Path(__file__).resolve().parent.parent.parent / "kerala_hospitals_geocoded.json"
 AMBULANCES_JSON   = Path(__file__).resolve().parent.parent.parent / "kerala_ambulances_50.json"
 
@@ -187,31 +187,29 @@ async def init_db(db: AsyncSession):
             db.add(a)
 
     # ── Black Spots ────────────────────────────────────────────────────────────
-    blackspots_data = [
-        dict(name="District Road THI-25",      lat=8.5268,  lon=76.7999, district="Thiruvananthapuram",
-             road="District Road THI-25",       count=30, fat=29.0, apy=30, sev=BlackSpotSeverity.HIGH),
-        dict(name="City Road THI-73",           lat=8.5339,  lon=76.9124, district="Thiruvananthapuram",
-             road="City Road THI-73",           count=45, fat=9.0,  apy=45, sev=BlackSpotSeverity.MEDIUM),
-        dict(name="MC Road Kottayam",           lat=9.9312,  lon=76.2673, district="Kottayam",
-             road="MC Road (NH 183)",           count=47, fat=15.0, apy=47, sev=BlackSpotSeverity.HIGH),
-        dict(name="Calicut Beach Road",         lat=11.2588, lon=75.7804, district="Kozhikode",
-             road="Beach Road",                 count=28, fat=10.0, apy=28, sev=BlackSpotSeverity.MEDIUM),
-        dict(name="Thrissur-Palakkad Highway",  lat=10.5276, lon=76.2144, district="Thrissur",
-             road="NH 544",                     count=32, fat=12.0, apy=32, sev=BlackSpotSeverity.HIGH),
-        dict(name="Kasaragod NH",               lat=12.4996, lon=74.9981, district="Kasaragod",
-             road="NH 66",                      count=25, fat=18.0, apy=25, sev=BlackSpotSeverity.HIGH),
-        dict(name="Wayanad Vythiri",            lat=11.5145, lon=76.0530, district="Wayanad",
-             road="Calicut-Mysore Highway",     count=20, fat=22.0, apy=20, sev=BlackSpotSeverity.HIGH),
+    # Only seed placeholder spots here; the real 32 Kerala spots are seeded via
+    # seed_blackspots.py / db_setup.py which uses kerala_blackspots.json.
+    # This block is intentionally left minimal so init_db stays idempotent.
+    placeholder_spots = [
+        dict(district="Thiruvananthapuram", location="District Road THI-25",
+             road_name="District Road THI-25", road_number="MDR", road_type="OR",
+             priority="3rd", latitude=8.5268, longitude=76.7999,
+             incident_count=30, fatality_rate=29.0, accidents_per_year=30,
+             severity=BlackSpotSeverity.HIGH, risk_score=5.9),
+        dict(district="Kottayam", location="MC Road Kottayam",
+             road_name="MC Road (NH 183)", road_number="NH-183", road_type="NH",
+             priority="3rd", latitude=9.9312, longitude=76.2673,
+             incident_count=47, fatality_rate=15.0, accidents_per_year=47,
+             severity=BlackSpotSeverity.HIGH, risk_score=6.2),
+        dict(district="Kozhikode", location="Calicut Beach Road",
+             road_name="Beach Road", road_number="MDR", road_type="OR",
+             priority="4th", latitude=11.2588, longitude=75.7804,
+             incident_count=28, fatality_rate=10.0, accidents_per_year=28,
+             severity=BlackSpotSeverity.MEDIUM, risk_score=3.8),
     ]
-    for bd in blackspots_data:
-        risk = min(10.0, (bd["count"] / 10) + bd["fat"] * 0.1)
-        bs = BlackSpot(
-            name=bd["name"], latitude=bd["lat"], longitude=bd["lon"],
-            district=bd["district"], road_name=bd["road"],
-            incident_count=bd["count"], fatality_rate=bd["fat"],
-            accidents_per_year=bd["apy"], severity=bd["sev"], risk_score=risk,
-        )
+    for bd in placeholder_spots:
+        bs = BlackSpot(**bd)
         db.add(bs)
 
     await db.flush()
-    print("Seed data inserted successfully.")
+    print("Seed data inserted successfully.")

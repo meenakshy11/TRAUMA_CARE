@@ -72,7 +72,7 @@ async def main():
                     role=UserRole.HOSPITAL_STAFF,
                     hospital_id=hospital_id,
                 )
-                print(f"  [created] {email} → hospital_id={hospital_id}")
+                print(f"  [created] {email} -> hospital_id={hospital_id}")
 
         await db.commit()
     print("Done.")
