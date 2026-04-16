@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
 from app.services.auth_service import create_user, get_user_by_email
 from app.core.constants import (
     UserRole, TraumaLevel, AmbulanceType, AmbulanceStatus,
@@ -120,17 +121,31 @@ async def init_db(db: AsyncSession):
         if first_hospital_id is None:
             first_hospital_id = h.id
 
-    if first_hospital_id:
-        await create_user(
-            db, email="hospital@trauma.kerala.gov.in",
-            password="Hosp@1234", full_name="Dr. Suresh Pillai",
-            role=UserRole.HOSPITAL_STAFF, hospital_id=first_hospital_id,
-        )
-        await create_user(
-            db, email="hospital@trauma.demo",
-            password="Hosp@1234", full_name="Dr. Sreeja Nair",
-            role=UserRole.HOSPITAL_STAFF, hospital_id=first_hospital_id,
-        )
+    # ── Hospital Staff Demo Users ──────────────────────────────────────────────
+    # Re-fetch the specific hospitals to assign demo staff users to them
+    res = await db.execute(
+        text("SELECT id, name FROM hospitals WHERE name IN ("
+             "'CARITAS HOSPITAL KOTTAYAM', "
+             "'JUBILEE MEMORIAL HOSPITAL PALAYAM', "
+             "'KOZHIKODE DISTRICT CO-OPERATIVE HOSPITAL', "
+             "'JUBILEE MISSION MEDICAL COLLEGE THRISSUR')")
+    )
+    h_map = {row.name: row.id for row in res}
+
+    demo_hosp_users = [
+        {"email": "hospital.kottayam@trauma.demo",  "name": "Dr. Caritas Admin", "hosp_name": "CARITAS HOSPITAL KOTTAYAM"},
+        {"email": "hospital.tvm@trauma.demo",       "name": "Dr. Jubilee TVM",   "hosp_name": "JUBILEE MEMORIAL HOSPITAL PALAYAM"},
+        {"email": "hospital.kozhikode@trauma.demo", "name": "Dr. Kozhikode Med", "hosp_name": "KOZHIKODE DISTRICT CO-OPERATIVE HOSPITAL"},
+        {"email": "hospital.thrissur@trauma.demo",  "name": "Dr. Jubilee TSR",   "hosp_name": "JUBILEE MISSION MEDICAL COLLEGE THRISSUR"}
+    ]
+
+    for u in demo_hosp_users:
+        hid = h_map.get(u["hosp_name"]) or first_hospital_id
+        if hid:
+            await create_user(
+                db, email=u["email"], password="Hosp@1234", full_name=u["name"],
+                role=UserRole.HOSPITAL_STAFF, hospital_id=hid,
+            )
 
     # ── Staging Stations ───────────────────────────────────────────────────────
     stations_data = [
