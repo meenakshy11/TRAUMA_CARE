@@ -23,7 +23,10 @@ export function SimulationPage() {
   const [loading,           setLoading]            = useState(false)
   const [routeLoading,      setRouteLoading]       = useState(false)
   const [rightTab,          setRightTab]           = useState<RightTab>("result")
-  const [showCoverageZones, setShowCoverageZones]  = useState(false)
+  const [showCoverageZones,      setShowCoverageZones]      = useState(false)
+  const [showBlackspotSegments, setShowBlackspotSegments] = useState(true)
+  const [showHospitals,         setShowHospitals]          = useState(true)
+  const [ambulanceStatusFilter, setAmbulanceStatusFilter] = useState<string[]>(['ALL'])
 
   // Map data
   const [ambulances,  setAmbulances]  = useState<any[]>([])
@@ -106,6 +109,7 @@ export function SimulationPage() {
   }
 
   // ── Ambulances to show on map: merge coverage zone data if available ───────
+  const ALL_STATUSES = ['AVAILABLE', 'DISPATCHED', 'BUSY']
   const mapAmbulances = coverageZones.length
     ? coverageZones.map((z: any) => ({
         id:            z.ambulance_id,
@@ -116,6 +120,26 @@ export function SimulationPage() {
         district:      z.district,
       }))
     : ambulances.filter((a: any) => a.current_lat && a.current_lon)
+
+  // Apply status filter
+  const displayAmbulances = ambulanceStatusFilter.includes('ALL')
+    ? mapAmbulances
+    : mapAmbulances.filter((a: any) => ambulanceStatusFilter.includes(a.status))
+
+  // Toggle handler: 'ALL' resets to showing everything; individual status toggles in/out
+  const handleToggleAmbulanceStatus = (key: string) => {
+    if (key === 'ALL') {
+      setAmbulanceStatusFilter(['ALL'])
+      return
+    }
+    setAmbulanceStatusFilter(prev => {
+      const without = prev.filter(s => s !== 'ALL')
+      const next = without.includes(key)
+        ? without.filter(s => s !== key)
+        : [...without, key]
+      return next.length === ALL_STATUSES.length ? ['ALL'] : next.length === 0 ? ['ALL'] : next
+    })
+  }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -151,6 +175,12 @@ export function SimulationPage() {
             clickedLatLng={clickedLatLng}
             showCoverageZones={showCoverageZones}
             onToggleCoverage={() => setShowCoverageZones(v => !v)}
+            showBlackspotSegments={showBlackspotSegments}
+            onToggleBlackspots={() => setShowBlackspotSegments(v => !v)}
+            showHospitals={showHospitals}
+            onToggleHospitals={() => setShowHospitals(v => !v)}
+            ambulanceStatusFilter={ambulanceStatusFilter}
+            onToggleAmbulanceStatus={handleToggleAmbulanceStatus}
             onSimulate={handleSimulate}
             onReset={handleReset}
             loading={loading}
@@ -162,10 +192,12 @@ export function SimulationPage() {
           <SimulationMap
             onMapClick={handleMapClick}
             simResult={simResult && !simResult.error ? simResult : null}
-            ambulances={mapAmbulances}
+            ambulances={displayAmbulances}
             hospitals={hospitals}
             blackspots={blackspots}
             showCoverageZones={showCoverageZones}
+            showBlackspotSegments={showBlackspotSegments}
+            showHospitals={showHospitals}
             clickedLatLng={clickedLatLng}
           />
 
@@ -189,7 +221,7 @@ export function SimulationPage() {
           </div>
 
           {/* Map legend overlay */}
-          {(showCoverageZones || (simResult && !simResult.error)) && (
+          {(showCoverageZones || showBlackspotSegments || (simResult && !simResult.error)) && (
             <div className={styles.coverageLegend}>
               {simResult && !simResult.error && (
                 <>
@@ -198,7 +230,7 @@ export function SimulationPage() {
                     <div style={{ width: 20, height: 3, background: "#3b82f6", borderRadius: 2, flexShrink: 0 }} />
                     Dispatch (ambulance → scene)
                   </div>
-                  <div className={styles.legendItem} style={{ marginBottom: showCoverageZones ? 10 : 0 }}>
+                  <div className={styles.legendItem} style={{ marginBottom: (showCoverageZones || showBlackspotSegments) ? 10 : 0 }}>
                     <div style={{ width: 20, height: 3, background: "#8b5cf6", borderRadius: 2, flexShrink: 0, borderBottom: "none", backgroundImage: "repeating-linear-gradient(90deg,#8b5cf6 0,#8b5cf6 6px,transparent 6px,transparent 10px)" }} />
                     Transport (scene → hospital)
                   </div>
@@ -213,9 +245,27 @@ export function SimulationPage() {
                   <div className={styles.legendItem}>
                     <div className={styles.legendDot} style={{ color: "#f59e0b" }} />30 min (20 km)
                   </div>
-                  <div className={styles.legendItem}>
+                  <div className={styles.legendItem} style={{ marginBottom: showBlackspotSegments ? 10 : 0 }}>
                     <div className={styles.legendDot} style={{ color: "#f97316" }} />45 min (30 km)
                   </div>
+                </>
+              )}
+              {showBlackspotSegments && (
+                <>
+                  <h4 style={{ marginTop: (simResult && !simResult.error) || showCoverageZones ? 4 : 0 }}>Black Spot Priority</h4>
+                  {([
+                    { color: "#ef4444", key: "1st", label: "Critical"  },
+                    { color: "#f97316", key: "2nd", label: "High"      },
+                    { color: "#eab308", key: "3rd", label: "Moderate"  },
+                    { color: "#84cc16", key: "4th", label: "Low"       },
+                    { color: "#60a5fa", key: "5th", label: "Minimal"   },
+                  ] as const).map(p => (
+                    <div key={p.key} className={styles.legendItem}>
+                      <div style={{ width: 18, height: 3, background: p.color, borderRadius: 2, flexShrink: 0 }} />
+                      <span style={{ color: p.color, fontWeight: 700, fontSize: 10 }}>{p.key}</span>
+                      <span style={{ fontSize: 10 }}>{p.label}</span>
+                    </div>
+                  ))}
                 </>
               )}
             </div>

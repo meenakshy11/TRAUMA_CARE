@@ -12,6 +12,10 @@ export default defineConfig({
   server: {
     port: 5173,
     host: "0.0.0.0",
+    watch: {
+      usePolling: true,   // needed for Docker on Windows (inotify doesn't work across volume mounts)
+      interval: 1000,
+    },
   },
   build: {
     outDir: "dist",

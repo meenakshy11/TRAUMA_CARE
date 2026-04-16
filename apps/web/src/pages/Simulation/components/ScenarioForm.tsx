@@ -1,11 +1,25 @@
 import styles from "../SimulationPage.module.css"
 
+const PRIORITY_LEGEND = [
+  { key: "1st", color: "#ef4444", label: "Critical" },
+  { key: "2nd", color: "#f97316", label: "High" },
+  { key: "3rd", color: "#eab308", label: "Moderate" },
+  { key: "4th", color: "#84cc16", label: "Low" },
+  { key: "5th", color: "#60a5fa", label: "Minimal" },
+]
+
 interface ScenarioFormProps {
   severity: string
   onSeverityChange: (s: string) => void
   clickedLatLng: { lat: number; lng: number } | null
   showCoverageZones: boolean
   onToggleCoverage: () => void
+  showBlackspotSegments: boolean
+  onToggleBlackspots: () => void
+  showHospitals: boolean
+  onToggleHospitals: () => void
+  ambulanceStatusFilter: string[]
+  onToggleAmbulanceStatus: (s: string) => void
   onSimulate: () => void
   onReset: () => void
   loading: boolean
@@ -23,6 +37,12 @@ export function ScenarioForm({
   clickedLatLng,
   showCoverageZones,
   onToggleCoverage,
+  showBlackspotSegments,
+  onToggleBlackspots,
+  showHospitals,
+  onToggleHospitals,
+  ambulanceStatusFilter,
+  onToggleAmbulanceStatus,
   onSimulate,
   onReset,
   loading,
@@ -89,15 +109,50 @@ export function ScenarioForm({
         </div>
       )}
 
-      {/* Coverage toggle */}
-      <div className={styles.toggle} onClick={onToggleCoverage}>
-        <span className={styles.toggleLabel}>
-          <span>🔵</span> Show Coverage Zones
-        </span>
-        <div className={`${styles.toggleSwitch} ${showCoverageZones ? styles.on : ""}`} />
+      {/* ── Map Layers section ───────────────────────────────────────────── */}
+      <div>
+        <p className={styles.sectionLabel}>Map Layers</p>
+
+        {/* Coverage Zones toggle */}
+        <div className={styles.toggle} onClick={onToggleCoverage} style={{ marginBottom: 6 }}>
+          <span className={styles.toggleLabel}>
+            <span>🔵</span> Coverage Zones
+          </span>
+          <div className={`${styles.toggleSwitch} ${showCoverageZones ? styles.on : ""}`} />
+        </div>
+
+        {/* Black Spot Segments toggle */}
+        <div className={styles.toggle} onClick={onToggleBlackspots}
+          style={{
+            borderColor: showBlackspotSegments ? "rgba(239,68,68,0.4)" : undefined,
+            background:  showBlackspotSegments ? "rgba(239,68,68,0.05)" : undefined,
+          }}
+        >
+          <span className={styles.toggleLabel}>
+            <span>🚨</span> Black Spot Segments
+          </span>
+          <div className={`${styles.toggleSwitch} ${showBlackspotSegments ? styles.on : ""}`}
+            style={{ background: showBlackspotSegments ? "#ef4444" : undefined }}
+          />
+        </div>
+
+        {/* Hospitals toggle */}
+        <div className={styles.toggle} onClick={onToggleHospitals}
+          style={{
+            borderColor: showHospitals ? "rgba(139,92,246,0.4)" : undefined,
+            background:  showHospitals ? "rgba(139,92,246,0.05)" : undefined,
+          }}
+        >
+          <span className={styles.toggleLabel}>
+            <span>🏥</span> Hospitals
+          </span>
+          <div className={`${styles.toggleSwitch} ${showHospitals ? styles.on : ""}`}
+            style={{ background: showHospitals ? "#8b5cf6" : undefined }}
+          />
+        </div>
       </div>
 
-      {/* Legend when coverage is on */}
+      {/* Coverage zone legend */}
       {showCoverageZones && (
         <div style={{
           background: "var(--color-bg-tertiary)",
@@ -118,6 +173,64 @@ export function ScenarioForm({
           ))}
         </div>
       )}
+
+      {/* Black spot priority legend */}
+      {showBlackspotSegments && (
+        <div style={{
+          background: "var(--color-bg-tertiary)",
+          border: "1px solid rgba(239,68,68,0.25)",
+          borderRadius: 8,
+          padding: "10px 12px",
+        }}>
+          <p className={styles.sectionLabel} style={{ marginBottom: 8 }}>Black Spot Priority</p>
+          {PRIORITY_LEGEND.map((p) => (
+            <div key={p.key} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5, fontSize: 11 }}>
+              {/* Segment line swatch */}
+              <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+                <div style={{ width: 4, height: 4, borderRadius: "50%", background: p.color }} />
+                <div style={{ width: 18, height: 3, background: p.color, borderRadius: 2 }} />
+                <div style={{ width: 4, height: 4, borderRadius: "50%", background: p.color }} />
+              </div>
+              <span style={{ color: p.color, fontWeight: 700 }}>{p.key}</span>
+              <span style={{ color: "var(--color-text-muted)" }}>— {p.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Ambulance Filter ────────────────────────────────────────────── */}
+      <div>
+        <p className={styles.sectionLabel}>Ambulance Status</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          {[
+            { key: 'ALL',        label: 'All',        color: '#94a3b8' },
+            { key: 'AVAILABLE',  label: 'Available',  color: '#10b981' },
+            { key: 'DISPATCHED', label: 'Dispatched', color: '#f59e0b' },
+            { key: 'BUSY',       label: 'Busy',       color: '#ef4444' },
+          ].map(s => {
+            const isActive = ambulanceStatusFilter.includes(s.key)
+            return (
+              <button
+                key={s.key}
+                onClick={() => onToggleAmbulanceStatus(s.key)}
+                style={{
+                  padding: '4px 11px',
+                  borderRadius: 99,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: `1px solid ${isActive ? s.color : 'var(--color-border-strong)'}`,
+                  background: isActive ? `${s.color}22` : 'transparent',
+                  color: isActive ? s.color : 'var(--color-text-muted)',
+                  transition: 'all .15s',
+                }}
+              >
+                🚑 {s.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
       {/* Simulate button */}
       <button
