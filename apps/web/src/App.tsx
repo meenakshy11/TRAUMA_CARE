@@ -16,6 +16,7 @@ import { HospitalStaffPortal } from "./pages/HospitalStaffPortal/HospitalStaffPo
 import { AdminPage } from "./pages/Admin/AdminPage"
 import { PublicReportPage } from "./pages/PublicReport/PublicReportPage"
 import { NotFoundPage } from "./pages/NotFound/NotFoundPage"
+import { AmbulanceBasesPage } from "./pages/AmbulanceBases/AmbulanceBasesPage"
 import { useAuthStore } from "./store/authStore"
 
 const queryClient = new QueryClient({
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="blackspots" element={<BlackSpotPage />} />
             <Route path="simulation" element={<SimulationPage />} />
             <Route path="admin" element={<AdminPage />} />
+            <Route path="ambulance-bases" element={<AmbulanceBasesPage />} />
           </Route>
 
           {/* 404 */}

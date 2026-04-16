@@ -1,6 +1,7 @@
 from app.models.user import User
 from app.models.hospital import Hospital, HospitalResource, TraumaSlot
 from app.models.ambulance import Ambulance, AmbulanceLocationHistory, StagingStation
+from app.models.ambulance_base import AmbulanceBase
 from app.models.incident import Incident, IncidentTimeline, IncidentPhoto
 from app.models.patient import Patient, VitalSign, TriageRecord, PatientInjury
 from app.models.blackspot import BlackSpot
@@ -14,4 +15,5 @@ __all__ = [
     "Incident", "IncidentTimeline", "IncidentPhoto",
     "Patient", "VitalSign", "TriageRecord", "PatientInjury",
     "BlackSpot", "DispatchRecord", "Notification", "AuditLog",
+    "AmbulanceBase",
 ]

@@ -6,11 +6,11 @@ export type Role = "DISPATCHER" | "HOSPITAL_STAFF" | "GOVERNMENT" | "ADMIN" | "P
 export const ROLE_ROUTES: Record<Role, string[]> = {
   ADMIN: [
     "/command-center", "/incidents", "/hospitals", "/hospital-dashboard",
-    "/blackspots", "/analytics", "/simulation", "/admin"
+    "/blackspots", "/analytics", "/simulation", "/admin", "/ambulance-bases"
   ],
   DISPATCHER: [
     "/command-center", "/incidents", "/hospitals", "/hospital-dashboard",
-    "/blackspots", "/analytics"
+    "/blackspots", "/analytics", "/ambulance-bases"
   ],
   HOSPITAL_STAFF: [
     "/hospital-staff", "/hospital-dashboard", "/incidents", "/hospitals"

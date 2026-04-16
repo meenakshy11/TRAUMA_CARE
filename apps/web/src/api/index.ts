@@ -316,3 +316,14 @@ export const publicApi = {
     return apiClient.post("/public/report", data)
   },
 }
+
+export const ambulanceBasesApi = {
+  getAll: async () => {
+    if (DEMO) return { data: [] }
+    return apiClient.get("/ambulance-bases")
+  },
+  getOne: async (base_id: string) => {
+    if (DEMO) return { data: null }
+    return apiClient.get(`/ambulance-bases/${base_id}`)
+  },
+}

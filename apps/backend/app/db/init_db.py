@@ -9,14 +9,16 @@ from app.core.constants import (
 )
 from app.models.hospital import Hospital, HospitalResource
 from app.models.ambulance import Ambulance, StagingStation
+from app.models.ambulance_base import AmbulanceBase
 from app.models.blackspot import BlackSpot
 from app.models.incident import Incident
 
 # JSON files sit at apps/backend/
 _BACKEND_DIR   = Path(__file__).resolve().parent.parent.parent
-HOSPITALS_JSON = _BACKEND_DIR / "kerala_hospitals_geocoded.json"
-AMBULANCES_JSON= _BACKEND_DIR / "kerala_ambulances_50.json"
-BLACKSPOTS_JSON= _BACKEND_DIR / "kerala_blackspots.json"
+HOSPITALS_JSON    = _BACKEND_DIR / "kerala_hospitals_geocoded.json"
+AMBULANCES_JSON   = _BACKEND_DIR / "kerala_ambulances_50.json"
+BLACKSPOTS_JSON   = _BACKEND_DIR / "kerala_blackspots.json"
+AMB_BASES_JSON    = _BACKEND_DIR / "ambulance_bases.json"
 
 _TRAUMA_LEVEL_MAP = {
     "LEVEL_1": TraumaLevel.LEVEL_1,
@@ -366,6 +368,25 @@ async def init_db(db: AsyncSession):
     for inc_data in demo_incidents:
         inc = Incident(reported_by_id=admin.id, **inc_data)
         db.add(inc)
+
+    # ── Ambulance Bases ────────────────────────────────────────────────────────
+    if not AMB_BASES_JSON.exists():
+        print(f"  WARNING: {AMB_BASES_JSON} not found — skipping ambulance bases seed")
+    else:
+        with open(AMB_BASES_JSON, "r", encoding="utf-8") as f:
+            base_records = json.load(f)
+
+        print(f"  Seeding {len(base_records)} ambulance bases from JSON...")
+        for rec in base_records:
+            b = AmbulanceBase(
+                base_id=rec["base_id"],
+                base_name=rec["base_name"],
+                base_address=rec.get("base_address"),
+                base_lat=rec["base_lat"],
+                base_lon=rec["base_lon"],
+                base_type=rec.get("base_type", "hospital"),
+            )
+            db.add(b)
 
     await db.flush()
     print("Seed data inserted successfully.")

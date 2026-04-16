@@ -1,0 +1,258 @@
+[
+  {
+    "base_id": "BASE_001",
+    "base_name": "General Hospital, Thiruvananthapuram",
+    "base_address": "General Hospital, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.49968472543896,
+    "base_lon": 76.9429088130814,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_002",
+    "base_name": "Taluk Hospital, Karunagappally",
+    "base_address": "Taluk Hospital, Karunagappally, Kollam, Kerala, 690518",
+    "base_lat": 9.06312226466229,
+    "base_lon": 76.534418270099,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_003",
+    "base_name": "General Hospital, Adoor",
+    "base_address": "General Hospital, Adoor, Pathanamthitta, Kerala, 689501",
+    "base_lat": 9.15648185493794,
+    "base_lon": 76.7311274683933,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_004",
+    "base_name": "Lifeline Super Speciality Hospital, Adoor",
+    "base_address": "Lifeline Super Speciality Hospital, Adoor, Pathanamthitta, Kerala, 691523",
+    "base_lat": 9.16348383690233,
+    "base_lon": 76.7063214538332,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_005",
+    "base_name": "ESI Dispensary, Aroor",
+    "base_address": "ESI Dispensary, Aroor, Cherthala, Alappuzha, Kerala, 688534",
+    "base_lat": 9.84773963985744,
+    "base_lon": 76.3073495240557,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_006",
+    "base_name": "Community Health Centre (CHC), Karthikappally",
+    "base_address": "Community Health Centre (CHC), Karthikappally, Alappuzha, Kerala, 690517",
+    "base_lat": 9.25974682893267,
+    "base_lon": 76.4108604103575,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_007",
+    "base_name": "SUT Hospital, Pattom",
+    "base_address": "SUT Hospital, Pattom, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.51637978036881,
+    "base_lon": 76.9406844334664,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_008",
+    "base_name": "Travancore Medicity",
+    "base_address": "Travancore Medicity, Umayanalloor, Mevaram, Kottiyam, Kollam, Kerala, 691001",
+    "base_lat": 8.87616580001355,
+    "base_lon": 76.6436169470698,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_009",
+    "base_name": "Primary Health Centre (PHC), Sakthikulangara",
+    "base_address": "Primary Health Centre (PHC), Sakthikulangara, Kollam, Kerala, 691001",
+    "base_lat": 8.8839773693324,
+    "base_lon": 76.5767069632544,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_010",
+    "base_name": "Government General Hospital, Adoor",
+    "base_address": "Government General Hospital, Adoor",
+    "base_lat": 9.15651332104715,
+    "base_lon": 76.7311403386118,
+    "base_type": "police"
+  },
+  {
+    "base_id": "BASE_011",
+    "base_name": "CHC Chirakkal, Puthiyatheru",
+    "base_address": "CHC Chirakkal, Puthiyatheru, Kannur, Kerala, 670010",
+    "base_lat": 11.9240567559385,
+    "base_lon": 75.3635772306757,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_012",
+    "base_name": "Ananthapuri Hospitals",
+    "base_address": "Ananthapuri Hospitals, Eanchakkal, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.48651866005314,
+    "base_lon": 76.9273483096787,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_013",
+    "base_name": "Government Medical College, Parippally",
+    "base_address": "Government Medical College, Parippally, Kollam, Kerala, 695603",
+    "base_lat": 8.81088255295242,
+    "base_lon": 76.7487996350474,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_014",
+    "base_name": "Taluk Hospital, Karunagappally",
+    "base_address": "Taluk Hospital, Karunagappally, Kollam, Kerala, 690539",
+    "base_lat": 9.06347258356374,
+    "base_lon": 76.5343370243484,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_015",
+    "base_name": "General Hospital, Pathanamthitta",
+    "base_address": "General Hospital, Pathanamthitta, Kerala, 689647",
+    "base_lat": 9.26668047788468,
+    "base_lon": 76.7811956224953,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_016",
+    "base_name": "Taluk Headquarters Hospital, Aluva",
+    "base_address": "Taluk Headquarters Hospital, Aluva, Ernakulam, Kerala, 683108",
+    "base_lat": 10.1058890978688,
+    "base_lon": 76.3551907145767,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_017",
+    "base_name": "Sunrise Hospital, Kakkanad",
+    "base_address": "Sunrise Hospital, Kakkanad, Ernakulam, Kerala, 680037",
+    "base_lat": 10.0255149553774,
+    "base_lon": 76.3389123648295,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_018",
+    "base_name": "General Hospital, Ernakulam",
+    "base_address": "General Hospital, Ernakulam, Kerala, 682035",
+    "base_lat": 9.97254299159518,
+    "base_lon": 76.2818667955203,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_019",
+    "base_name": "Kowdiar Fire Station",
+    "base_address": "Kowdiar Fire Station, Kowdiar, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.49825585652867,
+    "base_lon": 76.9527334820166,
+    "base_type": "fire"
+  },
+  {
+    "base_id": "BASE_020",
+    "base_name": "Sreekariyam PHC",
+    "base_address": "Sreekariyam PHC, Sreekariyam, Thiruvananthapuram, Kerala, 695581",
+    "base_lat": 8.55922421104616,
+    "base_lon": 76.9033292893653,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_021",
+    "base_name": "Government Medical College, Paruthippara",
+    "base_address": "Government Medical College, Paruthippara, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.52373820854277,
+    "base_lon": 76.9284692108532,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_022",
+    "base_name": "Peroorkada District Hospital",
+    "base_address": "Peroorkada District Hospital, Peroorkada, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.53552456172107,
+    "base_lon": 76.9672704071437,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_023",
+    "base_name": "Fort Taluk Hospital, Manacaud",
+    "base_address": "Fort Taluk Hospital, Manacaud, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.48653676431749,
+    "base_lon": 76.9408308955073,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_024",
+    "base_name": "Kulanada Medical Centre",
+    "base_address": "Kulanada Medical Centre, Kulanada, Pathanamthitta, Kerala, 689504",
+    "base_lat": 9.24030194547058,
+    "base_lon": 76.6723258602019,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_025",
+    "base_name": "Government Medical College, Vandanam",
+    "base_address": "Government Medical College, Vandanam, Alappuzha, Kerala, 688005",
+    "base_lat": 9.40871635059788,
+    "base_lon": 76.3473643541799,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_026",
+    "base_name": "KIMS Health, Kumarapuram",
+    "base_address": "KIMS Health, Kumarapuram, Thiruvananthapuram, Kerala, 695001",
+    "base_lat": 8.51579147372046,
+    "base_lon": 76.908830116965,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_027",
+    "base_name": "Taluk Hospital, Kundara",
+    "base_address": "Taluk Hospital, Kundara, Kollam, Kerala, 691511",
+    "base_lat": 8.97100433104663,
+    "base_lon": 76.6719048801656,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_028",
+    "base_name": "Kalluvathukkal PHC",
+    "base_address": "Kalluvathukkal PHC, Kalluvathukkal, Kollam, Kerala, 691578",
+    "base_lat": 8.84072026820716,
+    "base_lon": 76.7500050639729,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_029",
+    "base_name": "District Hospital, Kollam",
+    "base_address": "District Hospital, Kollam, Kerala, 691001",
+    "base_lat": 8.8879893913521,
+    "base_lon": 76.5847382378377,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_030",
+    "base_name": "St. Mary's Hospital, Manarcadu",
+    "base_address": "St. Mary's Hospital, Manarcadu, Kottayam, Kerala, 686019",
+    "base_lat": 9.59922664145856,
+    "base_lon": 76.5854358820259,
+    "base_type": "hospital"
+  },
+  {
+    "base_id": "BASE_031",
+    "base_name": "Kakkanad Fire Station",
+    "base_address": "Kakkanad Fire Station, Kakkanad, Ernakulam, Kerala, 682037",
+    "base_lat": 10.0197485897401,
+    "base_lon": 76.3341453243571,
+    "base_type": "fire"
+  },
+  {
+    "base_id": "BASE_032",
+    "base_name": "Pappinisseri Cooperative Hospital",
+    "base_address": "Pappinisseri Cooperative Hospital, Pappinisseri, Kannur, Kerala, 670561",
+    "base_lat": 11.9482360947252,
+    "base_lon": 75.3550707011066,
+    "base_type": "hospital"
+  }
+]

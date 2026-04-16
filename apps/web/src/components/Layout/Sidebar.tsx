@@ -36,6 +36,12 @@ const ALL_LINKS = [
       <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
     </svg>
   )},
+  { group: "RESOURCES", to: "/ambulance-bases", label: "Base Stations", icon: (
+    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+      <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+      <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H11a1 1 0 001-1v-1h2.05a2.5 2.5 0 014.9 0H19a1 1 0 001-1v-4a1 1 0 00-.293-.707l-3-3A1 1 0 0016 5h-3V4a1 1 0 00-1-1H3zm11 5h-2V6h1.586L15 8.586V9z"/>
+    </svg>
+  )},
   { group: "INTELLIGENCE", to: "/analytics", label: "Analytics", icon: (
     <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
       <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/>
