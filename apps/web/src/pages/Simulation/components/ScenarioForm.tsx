@@ -18,6 +18,8 @@ interface ScenarioFormProps {
   onToggleBlackspots: () => void
   showHospitals: boolean
   onToggleHospitals: () => void
+  showBases: boolean
+  onToggleBases: () => void
   ambulanceStatusFilter: string[]
   onToggleAmbulanceStatus: (s: string) => void
   onSimulate: () => void
@@ -41,6 +43,8 @@ export function ScenarioForm({
   onToggleBlackspots,
   showHospitals,
   onToggleHospitals,
+  showBases,
+  onToggleBases,
   ambulanceStatusFilter,
   onToggleAmbulanceStatus,
   onSimulate,
@@ -148,6 +152,21 @@ export function ScenarioForm({
           </span>
           <div className={`${styles.toggleSwitch} ${showHospitals ? styles.on : ""}`}
             style={{ background: showHospitals ? "#8b5cf6" : undefined }}
+          />
+        </div>
+
+        {/* Base Stations toggle */}
+        <div className={styles.toggle} onClick={onToggleBases}
+          style={{
+            borderColor: showBases ? "rgba(34,197,94,0.4)" : undefined,
+            background:  showBases ? "rgba(34,197,94,0.05)" : undefined,
+          }}
+        >
+          <span className={styles.toggleLabel}>
+            <span>🚑</span> Base Stations
+          </span>
+          <div className={`${styles.toggleSwitch} ${showBases ? styles.on : ""}`}
+            style={{ background: showBases ? "#22c55e" : undefined }}
           />
         </div>
       </div>

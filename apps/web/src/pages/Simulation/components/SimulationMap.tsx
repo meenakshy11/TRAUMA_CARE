@@ -90,15 +90,27 @@ interface BlackSpot {
   risk_score?: number
 }
 
+interface AmbulanceBase {
+  id: string
+  base_id: string
+  base_name: string
+  base_address?: string
+  base_lat: number
+  base_lon: number
+  base_type: "hospital" | "police" | "fire"
+}
+
 interface SimulationMapProps {
   onMapClick: (lat: number, lng: number) => void
   simResult: SimResult | null
   ambulances: Ambulance[]
   hospitals: Hospital[]
   blackspots: BlackSpot[]
+  bases: AmbulanceBase[]
   showCoverageZones: boolean
   showBlackspotSegments: boolean
   showHospitals: boolean
+  showBases: boolean
   clickedLatLng: { lat: number; lng: number } | null
 }
 
@@ -118,9 +130,11 @@ export function SimulationMap({
   ambulances,
   hospitals,
   blackspots,
+  bases,
   showCoverageZones,
   showBlackspotSegments,
   showHospitals,
+  showBases,
   clickedLatLng,
 }: SimulationMapProps) {
   const mapRef         = useRef<HTMLDivElement>(null)
@@ -134,6 +148,7 @@ export function SimulationMap({
   const markersRef = useRef<any>({
     ambulances:          {} as Record<string, any>,
     hospitals:           [] as any[],
+    basesMarkers:        [] as any[],
     blackspotLayers:     [] as any[],   // polylines + fallback circles
     accident:            null as any,
     routeLine:           null as any,
@@ -483,6 +498,58 @@ export function SimulationMap({
       })
     })
   }, [showCoverageZones, ambulances, mapReady])
+
+  // ── Base Station markers ───────────────────────────────────────────────────
+  const BASE_TYPE_STYLE: Record<string, { color: string; border: string; icon: string; label: string }> = {
+    hospital: { color: "rgba(34,197,94,0.18)",  border: "#22c55e", icon: "🏥", label: "Hospital"     },
+    police:   { color: "rgba(96,165,250,0.18)",  border: "#60a5fa", icon: "🚔", label: "Police"       },
+    fire:     { color: "rgba(249,115,22,0.18)",  border: "#f97316", icon: "🚒", label: "Fire Station" },
+  }
+
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!mapReadyRef.current || !map || !window.L) return
+    const L = window.L
+
+    markersRef.current.basesMarkers.forEach((m: any) => { try { m.remove() } catch (_) {} })
+    markersRef.current.basesMarkers = []
+    if (!showBases || bases.length === 0) return
+
+    bases.forEach((base) => {
+      const s = BASE_TYPE_STYLE[base.base_type] ?? BASE_TYPE_STYLE.hospital
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="
+          width:30px;height:30px;
+          background:${s.color};
+          border:2.5px solid ${s.border};
+          border-radius:6px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:15px;
+          box-shadow:0 3px 10px rgba(0,0,0,0.45);
+          cursor:pointer;
+        ">${s.icon}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -16],
+      })
+
+      const m = L.marker([base.base_lat, base.base_lon], { icon, zIndexOffset: 200 })
+      if (safeAdd(m, map)) {
+        m.bindPopup(`
+          <div style="font-family:sans-serif;padding:4px;min-width:160px">
+            <b style="color:${s.border}">${s.icon} ${base.base_name}</b><br/>
+            <span style="font-size:11px;color:#aaa">
+              Type: <b style="color:${s.border}">${s.label}</b><br/>
+              ID: ${base.base_id}<br/>
+              ${base.base_address ? base.base_address + "<br/>" : ""}
+              <span style="font-family:monospace">${base.base_lat.toFixed(5)}° N, ${base.base_lon.toFixed(5)}° E</span>
+            </span>
+          </div>`)
+        markersRef.current.basesMarkers.push(m)
+      }
+    })
+  }, [bases, showBases, mapReady])
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (

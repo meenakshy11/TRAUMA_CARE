@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react"
 import styles from "./SimulationPage.module.css"
-import { simulationApi, ambulancesApi, hospitalsApi, blackspotsApi } from "../../api/index"
+import { simulationApi, ambulancesApi, hospitalsApi, blackspotsApi, ambulanceBasesApi } from "../../api/index"
 import { SimulationMap } from "./components/SimulationMap"
 import { ScenarioForm } from "./components/ScenarioForm"
 import { SimulationResultPanel } from "./components/CoverageResultOverlay"
@@ -26,12 +26,14 @@ export function SimulationPage() {
   const [showCoverageZones,      setShowCoverageZones]      = useState(false)
   const [showBlackspotSegments, setShowBlackspotSegments] = useState(true)
   const [showHospitals,         setShowHospitals]          = useState(true)
+  const [showBases,             setShowBases]              = useState(true)
   const [ambulanceStatusFilter, setAmbulanceStatusFilter] = useState<string[]>(['ALL'])
 
   // Map data
-  const [ambulances,  setAmbulances]  = useState<any[]>([])
-  const [hospitals,   setHospitals]   = useState<any[]>([])
-  const [blackspots,  setBlackspots]  = useState<any[]>([])
+  const [ambulances,    setAmbulances]    = useState<any[]>([])
+  const [hospitals,     setHospitals]     = useState<any[]>([])
+  const [blackspots,    setBlackspots]    = useState<any[]>([])
+  const [bases,         setBases]         = useState<any[]>([])
   const [coverageZones, setCoverageZones] = useState<any[]>([])
   const [coverageLoading, setCoverageLoading] = useState(false)
 
@@ -39,15 +41,17 @@ export function SimulationPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [ambRes, hospRes, bsRes] = await Promise.allSettled([
+        const [ambRes, hospRes, bsRes, basesRes] = await Promise.allSettled([
           ambulancesApi.getAll(),
           hospitalsApi.getAll(),
           blackspotsApi.getAll(),
+          ambulanceBasesApi.getAll(),
         ])
 
-        if (ambRes.status === "fulfilled")  setAmbulances(ambRes.value.data  ?? [])
-        if (hospRes.status === "fulfilled") setHospitals(hospRes.value.data  ?? [])
-        if (bsRes.status === "fulfilled")   setBlackspots(bsRes.value.data   ?? [])
+        if (ambRes.status   === "fulfilled") setAmbulances(ambRes.value.data   ?? [])
+        if (hospRes.status  === "fulfilled") setHospitals(hospRes.value.data   ?? [])
+        if (bsRes.status    === "fulfilled") setBlackspots(bsRes.value.data    ?? [])
+        if (basesRes.status === "fulfilled") setBases(basesRes.value.data      ?? [])
       } catch (_) {
         // silently fail — map still works; simulation runs from API
       }
@@ -179,6 +183,8 @@ export function SimulationPage() {
             onToggleBlackspots={() => setShowBlackspotSegments(v => !v)}
             showHospitals={showHospitals}
             onToggleHospitals={() => setShowHospitals(v => !v)}
+            showBases={showBases}
+            onToggleBases={() => setShowBases(v => !v)}
             ambulanceStatusFilter={ambulanceStatusFilter}
             onToggleAmbulanceStatus={handleToggleAmbulanceStatus}
             onSimulate={handleSimulate}
@@ -195,9 +201,11 @@ export function SimulationPage() {
             ambulances={displayAmbulances}
             hospitals={hospitals}
             blackspots={blackspots}
+            bases={bases}
             showCoverageZones={showCoverageZones}
             showBlackspotSegments={showBlackspotSegments}
             showHospitals={showHospitals}
+            showBases={showBases}
             clickedLatLng={clickedLatLng}
           />
 
@@ -221,7 +229,7 @@ export function SimulationPage() {
           </div>
 
           {/* Map legend overlay */}
-          {(showCoverageZones || showBlackspotSegments || (simResult && !simResult.error)) && (
+          {(showCoverageZones || showBlackspotSegments || showBases || (simResult && !simResult.error)) && (
             <div className={styles.coverageLegend}>
               {simResult && !simResult.error && (
                 <>
@@ -264,6 +272,21 @@ export function SimulationPage() {
                       <div style={{ width: 18, height: 3, background: p.color, borderRadius: 2, flexShrink: 0 }} />
                       <span style={{ color: p.color, fontWeight: 700, fontSize: 10 }}>{p.key}</span>
                       <span style={{ fontSize: 10 }}>{p.label}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+              {showBases && (
+                <>
+                  <h4 style={{ marginTop: 4 }}>Base Stations</h4>
+                  {([
+                    { color: "#22c55e", icon: "🏥", label: "Hospital"     },
+                    { color: "#60a5fa", icon: "🚔", label: "Police"       },
+                    { color: "#f97316", icon: "🚒", label: "Fire Station" },
+                  ]).map(b => (
+                    <div key={b.label} className={styles.legendItem}>
+                      <span style={{ fontSize: 11 }}>{b.icon}</span>
+                      <span style={{ color: b.color, fontWeight: 700, fontSize: 10 }}>{b.label}</span>
                     </div>
                   ))}
                 </>
