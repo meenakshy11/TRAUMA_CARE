@@ -14,4 +14,4 @@ class BloodStock(Base):
     units_available: Mapped[int] = mapped_column(Integer, default=0)
     last_updated: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    hospital = relationship("Hospital", back_populates="blood_stock")
+    hospital = relationship("Hospital")

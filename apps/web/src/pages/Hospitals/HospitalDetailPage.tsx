@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { hospitalsApi } from '../../api/index'
+import { hospitalsApi, bloodStockApi } from '../../api/index'
 
 const HospitalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [hospital, setHospital] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [bloodStock, setBloodStock] = useState<any[]>([])
 
   useEffect(() => {
     if (!id) return
     hospitalsApi.getOne(id)
-      .then(r => setHospital(r.data))
+      .then(r => {
+        setHospital(r.data)
+        bloodStockApi.getByHospital(id).then(b => setBloodStock(Array.isArray(b.data) ? b.data : [])).catch(() => {})
+      })
       .finally(() => setLoading(false))
   }, [id])
 

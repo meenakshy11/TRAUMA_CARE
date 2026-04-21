@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useDistrictStore } from "../../store/districtStore"
-import { hospitalsApi, bloodStockApi } from "../../api/index"
+import { hospitalsApi } from "../../api/index"
 
 export function HospitalListPage() {
   const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
@@ -73,23 +73,6 @@ export function HospitalListPage() {
           </div>
         ) : (
           <div style={{ flex: 1, overflowY: "auto" }}>
-            <div style={{ marginBottom: 16, padding: 14, background: "var(--color-bg-secondary)", borderRadius: 8, border: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <span style={{ fontWeight: 600, fontSize: 13, color: "var(--color-text-primary)" }}>Search by Blood Group:</span>
-              <select
-                value={bloodGroup}
-                onChange={e => { setBloodGroup(e.target.value); searchByBloodGroup(e.target.value) }}
-                style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid var(--color-border-strong)", background: "var(--color-bg-primary)", color: "var(--color-text-primary)", fontSize: 13 }}
-              >
-                <option value="">-- Select Blood Group --</option>
-                {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
-              </select>
-              {bloodSearching && <span style={{ fontSize: 12, color: "var(--color-text-muted)" }}>Searching...</span>}
-              {bloodGroup && !bloodSearching && (
-                <span style={{ fontSize: 13, color: "var(--color-accent-green)", fontWeight: 600 }}>
-                  {bloodResults.length} hospitals have {bloodGroup} available
-                </span>
-              )}
-            </div>
             <table className="data-table">
               <thead>
                 <tr>
