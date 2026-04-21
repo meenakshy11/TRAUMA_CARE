@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useDistrictStore } from "../../store/districtStore"
 import { hospitalsApi } from "../../api/index"
 

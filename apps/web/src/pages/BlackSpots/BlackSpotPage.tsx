@@ -133,50 +133,35 @@ export function BlackSpotPage() {
 
         {/* Severity pills */}
         <div style={{ display: "flex", gap: 6 }}>
-          {["ALL", "HIGH", "MEDIUM", "LOW"].map(s => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className="btn"
-              style={{
-                padding: "5px 13px",
-                background: filter === s ? "var(--color-accent-blue)" : "transparent",
-                border: filter === s ? "1px solid var(--color-accent-blue)" : "1px solid var(--color-border-strong)",
-                color: filter === s ? "#fff" : "var(--color-text-secondary)",
-                borderRadius: 99, fontSize: 12, transition: "all .15s",
-              }}
-            >
-              {s}
-            </button>
-          ))}
+          <select
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            style={{
+              padding: "5px 12px", borderRadius: 6, fontSize: 12,
+              border: "1px solid var(--color-border-strong)",
+              background: "var(--color-bg-secondary)",
+              color: "var(--color-text-primary)", cursor: "pointer",
+            }}
+          >
+            {["ALL","HIGH","MEDIUM","LOW"].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
 
         <div style={{ width: 1, height: 24, background: "var(--color-border-strong)" }} />
 
         {/* Road-type pills */}
-        {roadTypes.map(rt => (
-          <button
-            key={rt}
-            onClick={() => setRoadTypeFilter(rt)}
-            className="btn"
-            style={{
-              padding: "5px 12px",
-              background: roadTypeFilter === rt
-                ? (ROAD_TYPE_BADGE[rt]?.bg ?? "var(--color-accent-blue)")
-                : "transparent",
-              border: roadTypeFilter === rt
-                ? `1px solid ${ROAD_TYPE_BADGE[rt]?.color ?? "var(--color-accent-blue)"}`
-                : "1px solid var(--color-border-strong)",
-              color: roadTypeFilter === rt
-                ? (ROAD_TYPE_BADGE[rt]?.color ?? "#fff")
-                : "var(--color-text-secondary)",
-              borderRadius: 99, fontSize: 12, fontWeight: 700, transition: "all .15s",
-            }}
-          >
-            {rt}
-          </button>
-        ))}
-
+        <select
+          value={roadTypeFilter}
+          onChange={e => setRoadTypeFilter(e.target.value)}
+          style={{
+            padding: "5px 12px", borderRadius: 6, fontSize: 12,
+            border: "1px solid var(--color-border-strong)",
+            background: "var(--color-bg-secondary)",
+            color: "var(--color-text-primary)", cursor: "pointer",
+          }}
+        >
+          {roadTypes.map(rt => <option key={rt} value={rt}>{rt}</option>)}
+        </select>
         <div style={{ width: 1, height: 24, background: "var(--color-border-strong)" }} />
 
         {/* District select */}

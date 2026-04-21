@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { hospitalsApi, bloodStockApi } from '../../api/index'
+import { useAuthStore } from '../../store/authStore'
 
 const HospitalDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -8,149 +9,145 @@ const HospitalDetailPage: React.FC = () => {
   const [hospital, setHospital] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [bloodStock, setBloodStock] = useState<any[]>([])
+  const user = useAuthStore((s) => s.user)
+  const canEdit = user?.role === 'HOSPITAL_STAFF' || user?.role === 'ADMIN'
 
   useEffect(() => {
     if (!id) return
     hospitalsApi.getOne(id)
-      .then(r => {
-        setHospital(r.data)
-        bloodStockApi.getByHospital(id).then(b => setBloodStock(Array.isArray(b.data) ? b.data : [])).catch(() => {})
-      })
+      .then(r => setHospital(r.data))
+      .catch(() => {})
       .finally(() => setLoading(false))
+    bloodStockApi.getByHospital(id)
+      .then(r => setBloodStock(Array.isArray(r.data) ? r.data : []))
+      .catch(() => {})
   }, [id])
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 16, color: 'var(--color-text-muted)' }}>
-        <div className="spinner" style={{ width: 32, height: 32, borderColor: 'var(--color-text-muted)', borderTopColor: 'var(--color-accent-blue)' }} />
-        <div style={{ fontSize: 14 }}>Loading hospital...</div>
-      </div>
-    )
+  const updateBloodStock = async (bloodGroup: string, delta: number) => {
+    if (!id) return
+    const current = bloodStock.find((s: any) => s.blood_group === bloodGroup)
+    const newUnits = Math.max(0, (current?.units_available || 0) + delta)
+    try {
+      await bloodStockApi.updateStock(id, bloodGroup, newUnits)
+      setBloodStock(prev => prev.map((s: any) =>
+        s.blood_group === bloodGroup ? { ...s, units_available: newUnits } : s
+      ))
+    } catch (e) {}
   }
 
-  if (!hospital) {
-    return (
-      <div style={{ textAlign: 'center', padding: 64, color: 'var(--color-text-muted)' }}>
-        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }}>🏥</div>
-        <div style={{ fontSize: 16, color: 'var(--color-text-primary)' }}>Hospital not found</div>
-        <button onClick={() => navigate('/hospitals')} className="btn btn-secondary" style={{ marginTop: 16 }}>← Back to Hospitals</button>
-      </div>
-    )
-  }
+  if (loading) return <div style={{ padding: 40, color: 'var(--color-text-secondary)' }}>Loading...</div>
+  if (!hospital) return <div style={{ padding: 40, color: 'var(--color-text-secondary)' }}>Hospital not found.</div>
 
   const res = hospital.resources || {}
 
-  const resourceCards = [
-    { label: 'ICU Beds',     value: `${res.icu_beds_available ?? 0} / ${res.icu_beds_total ?? 0}`,   color: res.icu_beds_available > 0 ? 'var(--color-success)' : 'var(--color-danger)' },
-    { label: 'Ventilators',  value: res.ventilators_available ?? '—',                                  color: 'var(--color-accent-blue)' },
-    { label: 'OT Status',    value: res.ot_available ? 'Ready' : 'Busy',                              color: res.ot_available ? 'var(--color-success)' : 'var(--color-warning)' },
-    { label: 'Blood Bank',   value: res.blood_bank_available ? 'Available' : 'Critical',              color: res.blood_bank_available ? 'var(--color-success)' : 'var(--color-danger)' },
-    { label: 'ED Capacity',  value: `${res.ed_capacity_current ?? 0} / ${res.ed_capacity_total ?? 0}`, color: 'var(--color-warning)' },
-    { label: 'Trauma Bays',  value: res.trauma_bays ?? '—',                                            color: 'var(--color-accent-cyan)' },
-  ]
-
-  const infoRows = [
-    ['Trauma Level',   hospital.trauma_level?.replace(/_/g, ' ')],
-    ['District',       hospital.district],
-    ['Address',        hospital.address],
-    ['Contact',        hospital.contact_number],
-    ['Type',           hospital.is_government ? 'Government' : 'Private'],
-    ['KASB Empanelled', hospital.is_kasb_empaneled ? '✅ Yes' : '❌ No'],
-    ['Coordinates',    hospital.latitude ? `${hospital.latitude.toFixed(5)}, ${hospital.longitude.toFixed(5)}` : '—'],
-  ]
-
   return (
-    <div>
-      {/* Back + Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-        <button
-          onClick={() => navigate('/hospitals')}
-          style={{ background: 'transparent', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', color: 'var(--color-text-secondary)', cursor: 'pointer', padding: '6px 12px', fontSize: 13, transition: 'all var(--transition-fast)' }}
-        >
-          ← Back
-        </button>
-        <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)' }}>{hospital.name}</h1>
-          <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>
-            {hospital.district} · {hospital.trauma_level?.replace(/_/g, ' ')}
+    <div style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <button onClick={() => navigate('/hospitals')} style={{ background: 'transparent', border: '1px solid var(--color-border)', borderRadius: 6, padding: '6px 14px', cursor: 'pointer', color: 'var(--color-text-secondary)', fontSize: 13 }}>Back</button>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)' }}>{hospital.name}</h1>
+            <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--color-text-secondary)' }}>{hospital.district} · {hospital.trauma_level}</p>
           </div>
         </div>
-        <span className={`badge ${res.icu_beds_available > 0 ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: 13, padding: '6px 14px' }}>
-          {res.icu_beds_available > 0 ? '🟢 ACCEPTING' : '🔴 FULL'}
-        </span>
+        <span style={{ fontSize: 12, background: 'rgba(34,197,94,0.15)', color: '#22c55e', padding: '4px 14px', borderRadius: 99, border: '1px solid #22c55e', fontWeight: 600 }}>ACCEPTING</span>
       </div>
 
-      {/* Resource KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14, marginBottom: 24 }}>
-        {resourceCards.map(c => (
-          <div key={c.label} className="card" style={{ padding: '14px 16px' }}>
-            <div style={{ fontSize: 10, color: 'var(--color-text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
-              {c.label}
-            </div>
-            <div className="mono" style={{ fontSize: 22, fontWeight: 700, color: c.color, lineHeight: 1 }}>
-              {c.value}
-            </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'ICU Beds', value: res.icu_beds_available != null ? res.icu_beds_available + ' / ' + res.icu_beds_total : '—' },
+          { label: 'Ventilators', value: res.ventilators ?? '—' },
+          { label: 'OT Status', value: res.ot_functional ? 'Ready' : 'Unavailable', color: res.ot_functional ? '#22c55e' : '#ef4444' },
+          { label: 'Blood Bank', value: res.blood_bank_available ? 'Available' : 'Unavailable', color: res.blood_bank_available ? '#22c55e' : '#ef4444' },
+          { label: 'ED Capacity', value: res.ed_beds_available != null ? res.ed_beds_available + ' / ' + res.ed_beds_total : '—' },
+          { label: 'Trauma Bays', value: res.trauma_bays ?? '—' },
+        ].map(card => (
+          <div key={card.label} style={{ background: 'var(--color-bg-secondary)', borderRadius: 8, padding: '12px 16px', border: '1px solid var(--color-border)' }}>
+            <div style={{ fontSize: 11, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>{card.label}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: (card as any).color || 'var(--color-text-primary)' }}>{card.value}</div>
           </div>
         ))}
       </div>
 
-      {/* Details Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        {/* Hospital Info */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-tertiary)' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Hospital Information
-            </span>
-          </div>
-          <div style={{ padding: '12px 20px' }}>
-            {infoRows.map(([label, value]) => (
-              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{label}</span>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-primary)', textAlign: 'right', maxWidth: '55%' }}>{value || '—'}</span>
-              </div>
-            ))}
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+        <div style={{ background: 'var(--color-bg-secondary)', borderRadius: 10, padding: 20, border: '1px solid var(--color-border)' }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Hospital Information</h3>
+          {[
+            { label: 'Trauma Level', value: hospital.trauma_level },
+            { label: 'District', value: hospital.district },
+            { label: 'Address', value: hospital.address },
+            { label: 'Contact', value: hospital.phone || '—' },
+            { label: 'Type', value: hospital.is_government ? 'Government' : 'Private' },
+            { label: 'KASB Empanelled', value: hospital.is_kasb_empaneled ? 'Yes' : 'No' },
+            { label: 'Coordinates', value: hospital.latitude != null ? hospital.latitude.toFixed(5) + ', ' + hospital.longitude.toFixed(5) : '—' },
+          ].map(row => (
+            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--color-border)', fontSize: 13 }}>
+              <span style={{ color: 'var(--color-text-secondary)' }}>{row.label}</span>
+              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{row.value}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Trauma Specializations */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-tertiary)' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Specializations & Protocols
-            </span>
-          </div>
-          <div style={{ padding: '20px' }}>
-            {(hospital.specializations || ['Emergency Medicine', 'Trauma Surgery', 'Neurosurgery', 'Cardiology', 'Orthopaedics']).map((s: string) => (
-              <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--color-border)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: 'var(--color-text-primary)' }}>{s}</span>
+        <div style={{ background: 'var(--color-bg-secondary)', borderRadius: 10, padding: 20, border: '1px solid var(--color-border)' }}>
+          <h3 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Specializations & Protocols</h3>
+          {(hospital.specializations || ['Emergency Medicine', 'Trauma Surgery']).map((s: string) => (
+            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 13, color: 'var(--color-text-primary)' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+              {s}
+            </div>
+          ))}
+          <h3 style={{ margin: '20px 0 12px', fontSize: 14, fontWeight: 600, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Operational Status</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 13 }}>
+            {[
+              { label: '24h Emergency', value: res.emergency_24h },
+              { label: 'Helipad', value: res.helipad },
+              { label: 'MCI Protocol', value: res.mci_protocol },
+              { label: 'Burn Unit', value: res.burn_unit },
+            ].map(item => (
+              <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--color-text-secondary)' }}>{item.label}</span>
+                <span style={{ color: item.value ? '#22c55e' : 'var(--color-text-muted)', fontWeight: 500 }}>{item.value ? 'Yes' : 'No'}</span>
               </div>
             ))}
-
-            <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12 }}>
-                Operational Status
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {[
-                  { label: '24h Emergency', value: true },
-                  { label: 'Helipad',        value: hospital.has_helipad ?? false },
-                  { label: 'MCI Protocol',   value: hospital.trauma_level === 'LEVEL_1' },
-                  { label: 'Burn Unit',      value: false },
-                ].map(item => (
-                  <div key={item.label} style={{ background: 'var(--color-bg-tertiary)', padding: '8px 12px', borderRadius: 'var(--radius-sm)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>{item.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: item.value ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
-                      {item.value ? 'Yes' : 'No'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
+
+      {bloodStock.length > 0 && (
+        <div style={{ background: 'var(--color-bg-secondary)', borderRadius: 10, padding: 20, border: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--color-text-primary)' }}>Blood Bank Stock</h3>
+              <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--color-text-secondary)' }}>Dispatch reduces count · Receive increases count</p>
+            </div>
+            <span style={{ fontSize: 11, background: 'rgba(34,197,94,0.15)', color: '#22c55e', padding: '3px 10px', borderRadius: 99, border: '1px solid #22c55e' }}>Blood bank active</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            {bloodStock.map((s: any) => {
+              const isLow = s.units_available > 0 && s.units_available <= 3
+              const isEmpty = s.units_available === 0
+              const badgeBg = isEmpty ? 'rgba(107,114,128,0.15)' : isLow ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)'
+              const badgeColor = isEmpty ? '#6b7280' : isLow ? '#ef4444' : '#22c55e'
+              return (
+                <div key={s.blood_group} style={{ background: 'var(--color-bg-primary)', border: '1px solid var(--color-border)', borderRadius: 8, padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)' }}>{s.blood_group}</span>
+                    <span style={{ fontSize: 11, background: badgeBg, color: badgeColor, padding: '2px 8px', borderRadius: 99 }}>
+                      {isEmpty ? 'Empty' : isLow ? s.units_available + ' — low' : s.units_available + ' units'}
+                    </span>
+                  </div>
+                  {canEdit && (
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button onClick={() => updateBloodStock(s.blood_group, -1)} disabled={isEmpty} style={{ flex: 1, padding: '4px 0', fontSize: 12, borderRadius: 6, background: isEmpty ? 'transparent' : 'rgba(239,68,68,0.1)', color: isEmpty ? '#9ca3af' : '#ef4444', border: '1px solid ' + (isEmpty ? '#e5e7eb' : '#ef4444'), cursor: isEmpty ? 'not-allowed' : 'pointer' }}>- Dispatch</button>
+                      <button onClick={() => updateBloodStock(s.blood_group, 1)} style={{ flex: 1, padding: '4px 0', fontSize: 12, borderRadius: 6, background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid #22c55e', cursor: 'pointer' }}>+ Receive</button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

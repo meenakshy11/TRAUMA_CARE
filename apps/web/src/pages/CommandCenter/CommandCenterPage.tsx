@@ -93,7 +93,7 @@ export function CommandCenterPage() {
       {kpiCards.length > 0 && (
         <div style={{
           display: "flex",
-          padding: "0 16px",
+          padding: "0",
           background: "var(--color-bg-secondary)",
           borderBottom: "1px solid var(--color-border)",
           flexShrink: 0,
@@ -101,7 +101,7 @@ export function CommandCenterPage() {
         }}>
           {kpiCards.map((k) => (
             <div key={k.label} style={{
-              minWidth: 130, padding: "10px 16px",
+              flex: 1, padding: "10px 20px",
               borderRight: "1px solid var(--color-border)", flexShrink: 0,
             }}>
               <div style={{ fontSize: 10, color: "var(--color-text-secondary)", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase" }}>

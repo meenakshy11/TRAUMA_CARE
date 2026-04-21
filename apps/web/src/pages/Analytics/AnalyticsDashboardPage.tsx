@@ -123,7 +123,7 @@ export function AnalyticsDashboardPage() {
             Analytics &amp; Performance
           </h1>
           <p style={{ color: "var(--color-text-secondary)", fontSize: 13, margin: "4px 0 0" }}>
-            Golden Hour compliance &middot; Response metrics &middot; Road Safety Intelligence &mdash; Kerala
+            Golden Hour compliance  Response metrics  Road Safety Intelligence — Kerala
           </p>
         </div>
 
@@ -243,7 +243,7 @@ export function AnalyticsDashboardPage() {
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-text-primary)" }}>
-                District Performance Matrix &mdash; All 14 Districts
+                District Performance Matrix — All 14 Districts
               </div>
               <span className="badge badge-muted">Live</span>
             </div>

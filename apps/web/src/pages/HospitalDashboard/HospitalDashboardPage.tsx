@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useAuthStore } from "../../store/authStore"
 
 import { hospitalsApi } from "../../api/index"
 import { DevBanner } from "../../components/DevBanner"
@@ -8,6 +9,8 @@ export function HospitalDashboardPage() {
   const [hospitals, setHospitals] = useState<any[]>([])
   const [selected, setSelected] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const user = useAuthStore((s) => s.user)
+  const canAcknowledge = user?.role === "HOSPITAL_STAFF" || user?.role === "ADMIN"
   const [acknowledged, setAcknowledged] = useState<Record<number, string>>({})
 
   const handleAcknowledge = (id: number) => {
