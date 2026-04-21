@@ -128,6 +128,15 @@ export const blackspotsApi = {
   },
 }
 
+export const bloodStockApi = {
+  getByHospital: (hospitalId: string) =>
+    apiClient.get(`/blood-stock/${hospitalId}`),
+  searchByBloodGroup: (bloodGroup: string) =>
+    apiClient.get("/blood-stock/search", { params: { blood_group: bloodGroup } }),
+  updateStock: (hospitalId: string, bloodGroup: string, units: number) =>
+    apiClient.put(`/blood-stock/${hospitalId}`, null, { params: { blood_group: bloodGroup, units } }),
+}
+
 export const analyticsApi = {
   getKPI: async (district?: string) => {
     if (DEMO) return { data: DEMO_KPI }

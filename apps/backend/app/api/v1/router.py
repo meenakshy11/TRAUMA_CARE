@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, incidents, ambulances, hospitals, patients, dispatch, blackspots, analytics, simulation, notifications, users, public, ambulance_bases
+from app.api.v1 import auth, incidents, ambulances, hospitals, patients, dispatch, blackspots, analytics, simulation, notifications, users, public, blood_stock, ambulance_bases
 
 api_router = APIRouter()
 
@@ -15,4 +15,5 @@ api_router.include_router(simulation.router)
 api_router.include_router(notifications.router)
 api_router.include_router(users.router)
 api_router.include_router(public.router)
+api_router.include_router(blood_stock.router)
 api_router.include_router(ambulance_bases.router)

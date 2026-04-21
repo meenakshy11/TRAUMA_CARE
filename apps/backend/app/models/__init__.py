@@ -17,3 +17,5 @@ __all__ = [
     "BlackSpot", "DispatchRecord", "Notification", "AuditLog",
     "AmbulanceBase",
 ]
+
+from app.models.blood_stock import BloodStock
